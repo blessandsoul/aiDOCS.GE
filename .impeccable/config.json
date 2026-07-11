@@ -1,0 +1,41 @@
+{
+  "_comment": "Brand whitelist for aidocs. The product hue is the brand, not AI slop. Read by .claude/hooks/frontend_design_gate.py via the vendored impeccable detector.",
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "ai-color-palette",
+        "value": "#4338ca",
+        "files": [
+          "src/**"
+        ],
+        "reason": "aidocs brand colour, locked in src/config/site.ts"
+      },
+      {
+        "rule": "ai-color-palette",
+        "value": "#c7d2fe",
+        "files": [
+          "src/**"
+        ],
+        "reason": "aidocs brand colour, locked in src/config/site.ts"
+      },
+      {
+        "rule": "ai-color-palette",
+        "value": "#4338ca",
+        "files": [
+          "src/**"
+        ],
+        "reason": "aidocs brand colour, locked in src/config/site.ts"
+      },
+      {
+        "rule": "ai-color-palette",
+        "value": "#6366f1",
+        "files": [
+          "src/**"
+        ],
+        "reason": "aidocs brand colour, locked in src/config/site.ts"
+      }
+    ]
+  }
+}
