@@ -3,11 +3,13 @@
 import { DocsToRow } from '@/features/showcase/DocsToRow';
 import { DocsSplit } from '@/features/showcase/DocsSplit';
 import { DocsScans } from '@/features/showcase/DocsScans';
+import { DocsAccuracy } from '@/features/showcase/DocsAccuracy';
+import { DocsHumanSignoff } from '@/features/showcase/DocsHumanSignoff';
 
 /* =========================================================================
    LandingShowcase: the aiDOCS product slot.
 
-   Three sections, and the order is the argument:
+   Five sections, and the order is the argument:
 
      1. Watch a receipt become a row. The signature. Everyone in this category stops at the
         extracted JSON. Nobody is buying JSON. The bookkeeper is buying a posted row, so the
@@ -18,6 +20,8 @@ import { DocsScans } from '@/features/showcase/DocsScans';
      3. The same receipt four ways, including the handwritten one that defeats us. We show the
         failure on purpose, because a buyer who has been burned before converts on a limit he
         can check, not on a percentage he cannot.
+     4. The confidence line makes the automation trade-off visible, including the unsafe state.
+     5. An ambiguous date stays held until an accountant corrects and signs the draft.
    ========================================================================= */
 
 export function LandingShowcase() {
@@ -26,6 +30,8 @@ export function LandingShowcase() {
       <DocsToRow />
       <DocsSplit />
       <DocsScans />
+      <DocsAccuracy />
+      <DocsHumanSignoff />
     </div>
   );
 }
