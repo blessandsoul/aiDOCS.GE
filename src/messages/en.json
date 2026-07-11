@@ -254,7 +254,7 @@
     "signoff": {
       "eyebrow": "Human sign-off",
       "heading": "A draft can wait. It cannot sign itself.",
-      "subtitle": "The ambiguous date is held, corrected by an accountant, and only then becomes an ORIS-ready row.",
+      "subtitle": "The ambiguous date is held. An accountant corrects it, the system produces a draft, and the row becomes ORIS-ready only after the accountant signs.",
       "extracted": "Extracted date",
       "ambiguous": "06/07/26 — 6 July or 7 June?",
       "held": "Held — no record can be created",

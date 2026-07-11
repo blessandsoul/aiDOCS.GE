@@ -1,13 +1,15 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {
+import * as docsDemoModels from './docs-demo-models.mjs';
+
+const {
   ACCURACY_LINES,
   SIGNOFF_STAGES,
   createTimelinePlayer,
   partitionFields,
   signoffFrame,
-} from './docs-demo-models.mjs';
+} = docsDemoModels;
 
 const FIELDS = [
   { id: 'supplier', confidence: 99 },
@@ -64,6 +66,15 @@ test('safe line holds known bad fields for a human', () => {
     ['date', 'purpose'],
   );
   assert.equal(result.auto.length + result.human.length + result.wrong.length, FIELDS.length);
+});
+
+test('initial confidence line matches the motion preference', () => {
+  const { initialAccuracyLine } = docsDemoModels;
+
+  assert.equal(typeof initialAccuracyLine, 'function');
+  assert.equal(initialAccuracyLine(false), 96);
+  assert.equal(initialAccuracyLine(null), 96);
+  assert.equal(initialAccuracyLine(true), 80);
 });
 
 test('unsafe low line auto-posts the deliberately bad date', () => {

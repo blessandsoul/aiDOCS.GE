@@ -2,6 +2,10 @@ export const ACCURACY_LINES = [96, 80, 65, 80];
 
 export const SIGNOFF_STAGES = ['held', 'corrected', 'drafted', 'signed'];
 
+export function initialAccuracyLine(reducedMotion) {
+  return reducedMotion ? (ACCURACY_LINES.at(-1) ?? 80) : (ACCURACY_LINES[0] ?? 96);
+}
+
 const SIGNOFF_FRAMES = {
   held: {
     correctedDate: null,

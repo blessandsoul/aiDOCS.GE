@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import {
   ACCURACY_LINES,
   createTimelinePlayer,
+  initialAccuracyLine,
   partitionFields,
 } from '@/features/showcase/docs-demo-models.mjs';
 
@@ -57,8 +58,6 @@ const FIELDS: Field[] = [
 
 const MIN = 35;
 const MAX = 100;
-const START = 80;
-
 type TimelinePlayer = { play: () => void; replay: () => void; cancel: () => void };
 
 type RowState = 'auto' | 'human' | 'wrong';
@@ -84,7 +83,7 @@ const TONE: Record<RowState, { bar: string; chip: string; card: string }> = {
 export function DocsAccuracy() {
   const t = useTranslations('product.accuracy');
   const reduced = useReducedMotion();
-  const [line, setLine] = useState(START);
+  const [line, setLine] = useState(() => initialAccuracyLine(reduced));
   const playerRef = useRef<TimelinePlayer | null>(null);
 
   useEffect(() => {
