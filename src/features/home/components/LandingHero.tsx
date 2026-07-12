@@ -163,7 +163,8 @@ export function LandingHero() {
         const maxW = measureMaxWidth();
         const caret = el.querySelector<HTMLElement>('.tw-caret');
         const caretW = caret ? caret.getBoundingClientRect().width + 2 : 8;
-        el.style.minWidth = `${Math.ceil(maxW + caretW)}px`;
+        const availableWidth = el.parentElement?.clientWidth ?? maxW + caretW;
+        el.style.minWidth = `${Math.min(Math.ceil(maxW + caretW), availableWidth)}px`;
       });
     };
 
@@ -541,10 +542,10 @@ void main(){vec4 o=vec4(0.0); mainImage(o,gl_FragCoord.xy); fragColor=o;}`;
           above everything with `order-first`, so a phone opened on a black call widget with no
           brand and no headline anywhere on screen: the product before the reader knew whose it was.
           At lg the explicit col/row starts fold A and C back into one column and let B span both. */}
-      <div className="max-w-[1180px] mx-auto relative z-10">
-        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-x-16 lg:gap-y-6">
+      <div className="w-full min-w-0 max-w-[1180px] mx-auto relative z-10">
+        <div className="grid w-full min-w-0 gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-x-16 lg:gap-y-6">
           {/* A. identity, audience, the pain */}
-          <div className="order-1 text-center lg:order-0 lg:col-start-1 lg:row-start-1 lg:text-left">
+          <div className="min-w-0 order-1 text-center lg:order-0 lg:col-start-1 lg:row-start-1 lg:text-left">
             <div className="flex flex-col items-center lg:items-start">
               <div
                 className={cn(
@@ -602,12 +603,12 @@ void main(){vec4 o=vec4(0.0); mainImage(o,gl_FragCoord.xy); fragColor=o;}`;
               the one thing on this screen that answers "what is it" without a single word being
               read: aiCALL shows a call confirming a row, aiDOCS shows a receipt collapsing into a
               ledger line, vibecoding shows a redacted key it just found. */}
-          <div className="relative order-2 lg:order-0 lg:col-start-2 lg:row-start-1 lg:row-span-2">
+          <div className="relative min-w-0 order-2 lg:order-0 lg:col-start-2 lg:row-start-1 lg:row-span-2">
             <HeroProof />
           </div>
 
           {/* C. how it works, the one button, the promise, the family */}
-          <div className="order-3 text-center lg:order-0 lg:col-start-1 lg:row-start-2 lg:text-left">
+          <div className="min-w-0 order-3 text-center lg:order-0 lg:col-start-1 lg:row-start-2 lg:text-left">
             <p className="mx-auto max-w-xl text-pretty text-[16px] leading-relaxed text-[#525252] lg:mx-0 md:text-[17px]">
               {t('sub')}
             </p>

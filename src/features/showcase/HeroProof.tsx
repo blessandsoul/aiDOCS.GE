@@ -59,10 +59,10 @@ export function HeroProof() {
 
   return (
     <div className="rounded-3xl bg-white/70 p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.07),0_28px_60px_-40px_rgba(0,0,0,0.45)] backdrop-blur-sm md:p-6">
-      <div className="grid grid-cols-[86px_1fr] items-center gap-4 md:grid-cols-[104px_1fr] md:gap-5">
+      <div className="grid grid-cols-1 items-center gap-4 sm:grid-cols-[86px_minmax(0,1fr)] md:grid-cols-[104px_minmax(0,1fr)] md:gap-5">
         {/* the paper. deliberately ugly: this is what actually arrives. */}
         <div
-          className="relative aspect-[3/4] overflow-hidden rounded-sm bg-[#f3f1ea] p-2 shadow-md md:p-2.5"
+          className="relative w-[86px] justify-self-center aspect-[3/4] overflow-hidden rounded-sm bg-[#f3f1ea] p-2 shadow-md sm:w-auto md:p-2.5"
           style={{ transform: 'rotate(-2.2deg)' }}
         >
           <span
@@ -84,7 +84,7 @@ export function HeroProof() {
         </div>
 
         {/* the fields, lifting off and then collapsing */}
-        <div className="relative min-h-[132px]">
+        <div className="relative min-h-[132px] min-w-0 w-full">
           {!posted && (
             <ul className="flex flex-col gap-1">
               {[
@@ -127,14 +127,14 @@ export function HeroProof() {
             >
               {/* The row lands INSIDE a system, not on a blank page. The dark chrome is what makes
                   this read as an accounting package rather than a floating table on white. */}
-              <div className="overflow-hidden rounded-xl shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_12px_30px_-18px_rgba(0,0,0,0.45)]">
+              <div className="min-w-0 overflow-hidden rounded-xl shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_12px_30px_-18px_rgba(0,0,0,0.45)]">
                 <div className="flex items-center gap-2 bg-[#141418] px-2.5 py-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" aria-hidden="true" />
                   <span className="text-[9.5px] font-semibold uppercase tracking-wide text-white/60">
                     {t('ledger')}
                   </span>
                 </div>
-                <table className="w-full border-collapse bg-white text-left">
+                <table className="w-full table-fixed border-collapse bg-white text-left">
                   <thead>
                     <tr className="border-b border-[#ececec]">
                       {[t('colDate'), t('colCounter'), t('colVat'), t('colTotal')].map((c) => (

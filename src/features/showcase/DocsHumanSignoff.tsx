@@ -70,7 +70,7 @@ export function DocsHumanSignoff() {
           </button>
         </div>
 
-        <div className="rounded-2xl bg-[#fafafa] p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.06)] md:p-6">
+        <div className="min-w-0 rounded-2xl bg-[#fafafa] p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.06)] md:p-6">
           <ol className="grid gap-2 sm:grid-cols-4" aria-label={t('eyebrow')}>
             {STEP_LABELS.map((label, index) => {
               const active = index === stageIndex;
@@ -109,7 +109,7 @@ export function DocsHumanSignoff() {
             initial={reduced ? false : { opacity: 0, y: 8, filter: 'blur(3px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: reduced ? 0 : 0.28, ease: [0.23, 1, 0.32, 1] }}
-            className="mt-5 grid gap-4 md:grid-cols-[minmax(190px,0.75fr)_1.25fr]"
+            className="mt-5 grid min-w-0 gap-4 md:grid-cols-[minmax(190px,0.75fr)_1.25fr]"
             aria-live="polite"
           >
             <div className="rounded-xl bg-white p-4 shadow-[0_0_0_1px_rgba(0,0,0,0.08)]">
@@ -138,7 +138,7 @@ export function DocsHumanSignoff() {
 
             <div
               className={cn(
-                'rounded-xl bg-white p-4 transition-[box-shadow] duration-200',
+                'min-w-0 rounded-xl bg-white p-4 transition-[box-shadow] duration-200',
                 isSigned
                   ? 'shadow-[0_0_0_1px_#10b981]'
                   : 'shadow-[0_0_0_1px_rgba(0,0,0,0.08)]',
