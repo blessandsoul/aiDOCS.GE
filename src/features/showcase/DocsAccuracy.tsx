@@ -173,7 +173,7 @@ export function DocsAccuracy() {
 
   return (
     <SectionContainer className="py-20 md:py-28">
-      <div className="grid gap-10 lg:grid-cols-[minmax(280px,400px)_1fr] lg:gap-14">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-[minmax(280px,400px)_1fr] lg:gap-14">
         <div ref={sectionRef} className="min-w-0">
           <span className="text-[12px] tracking-wide text-neutral-900/40">
             {t('eyebrow')}

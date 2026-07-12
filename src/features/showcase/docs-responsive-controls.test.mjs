@@ -9,6 +9,10 @@ function source(file) {
 test('the accuracy control can shrink inside the 342px grid', () => {
   const accuracy = source('DocsAccuracy.tsx');
 
+  assert.match(
+    accuracy,
+    /className="grid grid-cols-\[minmax\(0,1fr\)\] gap-10 lg:grid-cols-\[minmax\(280px,400px\)_1fr\]/u,
+  );
   assert.match(accuracy, /<div ref=\{sectionRef\} className="min-w-0">/u);
 });
 
