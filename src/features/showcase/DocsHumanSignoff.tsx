@@ -10,6 +10,7 @@ import {
   createTimelinePlayer,
   signoffFrame,
 } from '@/features/showcase/docs-demo-models.mjs';
+import { startTimelineWhenVisible } from './docs-demo-visibility.mjs';
 
 type SignoffStage = 'held' | 'corrected' | 'drafted' | 'signed';
 type TimelinePlayer = { play: () => void; replay: () => void; cancel: () => void };
@@ -22,6 +23,7 @@ export function DocsHumanSignoff() {
   const reduced = useReducedMotion();
   const [stage, setStage] = useState<SignoffStage>('held');
   const playerRef = useRef<TimelinePlayer | null>(null);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const timeline = createTimelinePlayer({
@@ -30,9 +32,14 @@ export function DocsHumanSignoff() {
       reducedMotion: Boolean(reduced),
     });
     playerRef.current = timeline;
-    timeline.play();
+    const stopVisibility = startTimelineWhenVisible({
+      node: sectionRef.current,
+      reducedMotion: Boolean(reduced),
+      play: timeline.play,
+    });
 
     return () => {
+      stopVisibility();
       timeline.cancel();
       if (playerRef.current === timeline) playerRef.current = null;
     };
@@ -70,7 +77,10 @@ export function DocsHumanSignoff() {
           </button>
         </div>
 
-        <div className="min-w-0 rounded-2xl bg-[#fafafa] p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.06)] md:p-6">
+        <div
+          ref={sectionRef}
+          className="min-w-0 rounded-2xl bg-[#fafafa] p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.06)] md:p-6"
+        >
           <ol className="grid gap-2 sm:grid-cols-4" aria-label={t('eyebrow')}>
             {STEP_LABELS.map((label, index) => {
               const active = index === stageIndex;

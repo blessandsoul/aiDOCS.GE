@@ -11,6 +11,7 @@ import {
   initialAccuracyLine,
   partitionFields,
 } from '@/features/showcase/docs-demo-models.mjs';
+import { startTimelineWhenVisible } from './docs-demo-visibility.mjs';
 
 /* =========================================================================
    DocsAccuracy: HOW it works. He sets the line himself and watches what it costs him.
@@ -83,8 +84,10 @@ const TONE: Record<RowState, { bar: string; chip: string; card: string }> = {
 export function DocsAccuracy() {
   const t = useTranslations('product.accuracy');
   const reduced = useReducedMotion();
-  const [line, setLine] = useState(() => initialAccuracyLine(reduced));
+  const [line, setLine] = useState(() => initialAccuracyLine(false));
   const playerRef = useRef<TimelinePlayer | null>(null);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const visibilityCleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const timeline = createTimelinePlayer({
@@ -93,15 +96,24 @@ export function DocsAccuracy() {
       reducedMotion: Boolean(reduced),
     });
     playerRef.current = timeline;
-    timeline.play();
+    const stopVisibility = startTimelineWhenVisible({
+      node: sectionRef.current,
+      reducedMotion: Boolean(reduced),
+      play: timeline.play,
+    });
+    visibilityCleanupRef.current = stopVisibility;
 
     return () => {
+      stopVisibility();
+      if (visibilityCleanupRef.current === stopVisibility) visibilityCleanupRef.current = null;
       timeline.cancel();
       if (playerRef.current === timeline) playerRef.current = null;
     };
   }, [reduced]);
 
   const setManualLine = useCallback((value: number) => {
+    visibilityCleanupRef.current?.();
+    visibilityCleanupRef.current = null;
     playerRef.current?.cancel();
     setLine(value);
   }, []);
@@ -162,7 +174,7 @@ export function DocsAccuracy() {
   return (
     <SectionContainer className="py-20 md:py-28">
       <div className="grid gap-10 lg:grid-cols-[minmax(280px,400px)_1fr] lg:gap-14">
-        <div>
+        <div ref={sectionRef}>
           <span className="text-[12px] uppercase tracking-wide text-neutral-900/40">
             {t('eyebrow')}
           </span>
