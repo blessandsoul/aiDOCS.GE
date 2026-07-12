@@ -31,10 +31,10 @@
     "legal": "Zemo Plato, III Array, N14, Apt. 87, Tbilisi 0163"
   },
   "landingNav": {
-    "showcase": "Watch a receipt become a row",
+    "showcase": "See document flow",
     "process": "How it works",
     "faq": "Questions",
-    "cta": "Get in touch"
+    "cta": "Try your documents"
   },
   "landingFooter": {
     "company": "AI NOW LLC, Tbilisi, Georgia",
@@ -43,10 +43,10 @@
     "socialHeading": "Social",
     "languageHeading": "Language",
     "contact": "Contact",
-    "sectionShowcase": "Watch a receipt become a row",
+    "sectionShowcase": "See document flow",
     "sectionWork": "How it works",
     "sectionFaq": "Questions",
-    "ctaHuge": "Send us the month you hate",
+    "ctaHuge": "Send us a sample",
     "copyright": "© {year} aiDOCS, an aiNOW product. All rights reserved."
   },
   "product": {
@@ -60,17 +60,12 @@
       "taglineWorks": "posts it",
       "typewriterWords": "ledger row,posted entry,line in ORIS,line in Balance,line in 1C",
       "typewriterPrefill": "ledger row",
-      "sloganCreates": "creates",
-      "sloganAds": "advertises",
-      "sloganSells": "sells",
-      "sloganManages": "manages",
-      "sloganTogether": "together",
       "ctaResults": "Watch a receipt become a row",
       "ctaCall": "Book a call",
       "commitment": "We measure accuracy on your own documents before you pay anything. First 3 accounting firms get the pilot free and keep their own number.",
       "audience": "For accounting firms, bookkeepers and customs brokers",
       "sub": "Bank statement PDFs, foreign supplier invoices, customs paperwork and photographed receipts. The pile somebody still re-types by hand, because rs.ge does not contain it.",
-      "signedBy": "Andrew Altair. I am the one who measures it on your documents."
+      "signedBy": "aiNOW checks this process on your data, sets it up, and shows you the result."
     },
     "work": {
       "eyebrow": "How it works",
