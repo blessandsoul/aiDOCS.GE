@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, useReducedMotion } from 'framer-motion';
+import { Ico } from '@/components/common/Ico';
+import { createDocsDemoLoop } from './docs-demo-visibility.mjs';
 
 /* =========================================================================
    HeroProof, aiDOCS: a crumpled receipt that has already become one ledger line.
@@ -25,40 +27,52 @@ const ROW = {
   total: '175.00',
 };
 
-/* An equal-thirds loop rests on a transition two times out of three, so a visitor who glances
-   once lands on blurred half-lifted fields and reads the panel as broken. The row IS the product,
-   so the row is what the panel rests on: the story plays for two seconds and the payoff is held
-   for five. Anyone who looks at any random moment sees the finished ledger line. */
-const SCHEDULE = [
-  { beat: 0, hold: 1400 }, // the fields, as they come off the paper
-  { beat: 1, hold: 700 }, //  they collapse
-  { beat: 2, hold: 5100 }, // THE ROW, held
-] as const;
+type DemoLoop = ReturnType<typeof createDocsDemoLoop>;
 
 export function HeroProof() {
   const t = useTranslations('product.proof');
   const reduced = useReducedMotion();
   const [beat, setBeat] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const loopRef = useRef<DemoLoop | null>(null);
+
+  const clear = useCallback(() => {
+    timerRef.current.forEach(clearTimeout);
+    timerRef.current = [];
+  }, []);
 
   useEffect(() => {
-    if (reduced) {
-      setBeat(2);
-      return;
-    }
-    let timer: ReturnType<typeof setTimeout>;
-    const step = (i: number) => {
-      const s = SCHEDULE[i % SCHEDULE.length] ?? SCHEDULE[0];
-      setBeat(s.beat);
-      timer = setTimeout(() => step(i + 1), s.hold);
+    if (!sectionRef.current) return;
+    const play = () => {
+      clear();
+      setBeat(0);
+      timerRef.current.push(setTimeout(() => setBeat(1), 1400));
+      timerRef.current.push(setTimeout(() => setBeat(2), 2100));
     };
-    step(0);
-    return () => clearTimeout(timer);
-  }, [reduced]);
+    const loop = createDocsDemoLoop({
+      target: sectionRef.current,
+      reducedMotion: Boolean(reduced),
+      cycleMs: 2100,
+      play: play,
+      showFinal: () => setBeat(2),
+      reset: () => setBeat(0),
+      stop: clear,
+    });
+    loopRef.current = loop;
+    return () => {
+      loop.cleanup();
+      clear();
+      if (loopRef.current === loop) loopRef.current = null;
+    };
+  }, [clear, reduced]);
+
+  const replay = () => loopRef.current?.replay();
 
   const posted = beat >= 2;
 
   return (
-    <div className="rounded-3xl bg-white/70 p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.07),0_28px_60px_-40px_rgba(0,0,0,0.45)] backdrop-blur-sm md:p-6">
+    <div ref={sectionRef} className="rounded-3xl bg-white/70 p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.07),0_28px_60px_-40px_rgba(0,0,0,0.45)] backdrop-blur-sm md:p-6">
       <div className="grid grid-cols-1 items-center gap-4 sm:grid-cols-[86px_minmax(0,1fr)] md:grid-cols-[104px_minmax(0,1fr)] md:gap-5">
         {/* the paper. deliberately ugly: this is what actually arrives. */}
         <div
@@ -96,7 +110,7 @@ export function HeroProof() {
               ].map(([k, v], i) => (
                 <motion.li
                   key={k}
-                  initial={reduced ? false : { opacity: 0, x: -8, filter: 'blur(3px)' }}
+                  initial={false}
                   animate={
                     beat === 1
                       ? { opacity: 0, y: 18, scale: 0.94, filter: 'blur(3px)' }
@@ -121,7 +135,7 @@ export function HeroProof() {
           {/* THE ROW. the product. */}
           {posted && (
             <motion.div
-              initial={reduced ? false : { opacity: 0, y: 16, scale: 0.97 }}
+              initial={false}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
             >
@@ -130,7 +144,7 @@ export function HeroProof() {
               <div className="min-w-0 overflow-hidden rounded-xl shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_12px_30px_-18px_rgba(0,0,0,0.45)]">
                 <div className="flex items-center gap-2 bg-[#141418] px-2.5 py-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" aria-hidden="true" />
-                  <span className="text-[9.5px] font-semibold uppercase tracking-wide text-white/60">
+                  <span className="text-[9.5px] font-semibold tracking-wide text-white/60">
                     {t('ledger')}
                   </span>
                 </div>
@@ -140,7 +154,7 @@ export function HeroProof() {
                       {[t('colDate'), t('colCounter'), t('colVat'), t('colTotal')].map((c) => (
                         <th
                           key={c}
-                          className="whitespace-nowrap px-2.5 py-1.5 text-[9px] font-semibold uppercase tracking-wide text-neutral-900/35"
+                          className="whitespace-nowrap px-2.5 py-1.5 text-[9px] font-semibold tracking-wide text-neutral-900/35"
                         >
                           {c}
                         </th>
@@ -164,21 +178,26 @@ export function HeroProof() {
                       </td>
                       <td className="px-1.5">
                         <motion.span
-                          initial={reduced ? false : { scale: 0.25, opacity: 0, filter: 'blur(4px)' }}
+                          initial={false}
                           animate={{ scale: 1, opacity: 1, filter: 'blur(0px)' }}
                           transition={{ type: 'spring', duration: 0.3, bounce: 0, delay: 0.16 }}
                           className="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[#10b981] text-[9px] font-bold text-white"
                           style={{ height: 18, width: 18 }}
                           aria-hidden="true"
                         >
-                          ok
+                          <Ico name="solar:check-circle-bold-duotone" className="h-4 w-4" />
                         </motion.span>
                       </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
-              <p className="mt-2.5 text-[11px] leading-snug text-neutral-900/45">{t('note')}</p>
+              <div className="mt-2.5 flex items-center justify-between gap-3">
+                <p className="text-[11px] leading-snug text-neutral-900/45">{t('note')}</p>
+                <button type="button" onClick={replay} aria-label={t('replay')} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-neutral-900 shadow-[0_0_0_1px_rgba(0,0,0,0.08)]">
+                  <Ico name="solar:refresh-bold-duotone" className="h-4 w-4" />
+                </button>
+              </div>
             </motion.div>
           )}
         </div>

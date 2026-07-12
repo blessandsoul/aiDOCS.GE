@@ -10,6 +10,7 @@ import { Ico } from '@/components/common/Ico';
 // the product, in a single frame, above the fold. See src/features/showcase/HeroProof.tsx.
 import { HeroProof } from '@/features/showcase/HeroProof';
 import './landing-hero.css';
+import './landing-product-copy.css';
 
 /* hex -> normalized [r,g,b] for the WebGL grainient uniforms */
 const hexToRgb = (hex: string): [number, number, number] => {
@@ -558,7 +559,7 @@ void main(){vec4 o=vec4(0.0); mainImage(o,gl_FragCoord.xy); fragColor=o;}`;
             {/* WHO IT IS FOR. The audit's second finding: not one of the six named its buyer
                 above the fold, and a reader who cannot see himself in the first screen leaves,
                 and he is right to. Plain nouns, not a segment. */}
-            <p className="hero-audience mt-7 text-[13px] font-semibold uppercase tracking-[0.09em] text-neutral-900/45 md:text-[13.5px]">
+            <p className="hero-audience mt-7 text-[13px] font-semibold tracking-[0.09em] text-neutral-900/45 md:text-[13.5px]">
               {t('audience')}
             </p>
 
@@ -614,19 +615,7 @@ void main(){vec4 o=vec4(0.0); mainImage(o,gl_FragCoord.xy); fragColor=o;}`;
             <MagneticButton className="w-full sm:w-auto">
               <a href="#cta" className="btn-primary w-full justify-center sm:w-auto">
                 <span>{t('ctaResults')}</span>
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="12 5 19 12 12 19" />
-                </svg>
+                <Ico name="solar:arrow-right-bold-duotone" className="h-[18px] w-[18px]" />
               </a>
             </MagneticButton>
             {/* The second call to action is gone. A ghost "book a call" next to the primary

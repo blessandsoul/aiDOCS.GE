@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, useReducedMotion } from 'framer-motion';
+import { Ico } from '@/components/common/Ico';
 import { SectionContainer } from '@/components/layout/SectionContainer';
 import { cn } from '@/lib/utils';
 import {
@@ -10,10 +11,11 @@ import {
   createTimelinePlayer,
   signoffFrame,
 } from '@/features/showcase/docs-demo-models.mjs';
-import { startTimelineWhenVisible } from './docs-demo-visibility.mjs';
+import { createDocsDemoLoop } from './docs-demo-visibility.mjs';
 
 type SignoffStage = 'held' | 'corrected' | 'drafted' | 'signed';
 type TimelinePlayer = { play: () => void; replay: () => void; cancel: () => void };
+type DemoLoop = ReturnType<typeof createDocsDemoLoop>;
 
 const STEP_LABELS = ['held', 'accountant', 'draft', 'signed'] as const;
 
@@ -22,30 +24,34 @@ export function DocsHumanSignoff() {
   const rowT = useTranslations('product.row');
   const reduced = useReducedMotion();
   const [stage, setStage] = useState<SignoffStage>('held');
-  const playerRef = useRef<TimelinePlayer | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
+  const loopRef = useRef<DemoLoop | null>(null);
 
   useEffect(() => {
-    const timeline = createTimelinePlayer({
+    if (!sectionRef.current) return;
+    const timeline: TimelinePlayer = createTimelinePlayer({
       stages: SIGNOFF_STAGES,
       onStage: (next: SignoffStage) => setStage(next),
-      reducedMotion: Boolean(reduced),
     });
-    playerRef.current = timeline;
-    const stopVisibility = startTimelineWhenVisible({
-      node: sectionRef.current,
+    const loop = createDocsDemoLoop({
+      target: sectionRef.current,
       reducedMotion: Boolean(reduced),
+      cycleMs: 7200,
       play: timeline.play,
+      showFinal: () => setStage('signed'),
+      reset: () => setStage('held'),
+      stop: timeline.cancel,
     });
+    loopRef.current = loop;
 
     return () => {
-      stopVisibility();
+      loop.cleanup();
       timeline.cancel();
-      if (playerRef.current === timeline) playerRef.current = null;
+      if (loopRef.current === loop) loopRef.current = null;
     };
   }, [reduced]);
 
-  const replay = useCallback(() => playerRef.current?.replay(), []);
+  const replay = useCallback(() => loopRef.current?.replay(), []);
   const frame = useMemo(() => signoffFrame(stage), [stage]);
   const stageIndex = SIGNOFF_STAGES.indexOf(stage);
   const hasCorrection = frame.correctedDate !== null;
@@ -56,7 +62,7 @@ export function DocsHumanSignoff() {
     <SectionContainer className="py-20 md:py-28">
       <div className="grid gap-10 lg:grid-cols-[minmax(280px,380px)_1fr] lg:gap-14">
         <div>
-          <span className="text-[12px] uppercase tracking-wide text-neutral-900/40">
+          <span className="text-[12px] tracking-wide text-neutral-900/40">
             {t('eyebrow')}
           </span>
           <h2 className="mt-4 text-balance font-display text-3xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-4xl">
@@ -104,7 +110,7 @@ export function DocsHumanSignoff() {
                     )}
                     aria-hidden="true"
                   >
-                    {complete ? '✓' : index + 1}
+                    {complete ? <Ico name="solar:check-circle-bold-duotone" className="h-4 w-4" /> : index + 1}
                   </span>
                   <span className="mt-2 block text-pretty text-[11px] font-semibold leading-snug text-neutral-900">
                     {t(label)}
@@ -116,14 +122,14 @@ export function DocsHumanSignoff() {
 
           <motion.div
             key={stage}
-            initial={reduced ? false : { opacity: 0, y: 8, filter: 'blur(3px)' }}
+            initial={false}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             transition={{ duration: reduced ? 0 : 0.28, ease: [0.23, 1, 0.32, 1] }}
             className="mt-5 grid min-w-0 gap-4 md:grid-cols-[minmax(190px,0.75fr)_1.25fr]"
             aria-live="polite"
           >
             <div className="rounded-xl bg-white p-4 shadow-[0_0_0_1px_rgba(0,0,0,0.08)]">
-              <span className="text-[11px] uppercase tracking-wide text-neutral-900/35">
+              <span className="text-[11px] tracking-wide text-neutral-900/35">
                 {t('extracted')}
               </span>
               <span
@@ -155,12 +161,12 @@ export function DocsHumanSignoff() {
               )}
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-[11px] uppercase tracking-wide text-neutral-900/35">
+                <span className="text-[11px] tracking-wide text-neutral-900/35">
                   {rowT('ledger')}
                 </span>
                 <span
                   className={cn(
-                    'rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide',
+                    'rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide',
                     isSigned
                       ? 'bg-[#10b981]/14 text-[#065f46]'
                       : hasDraft
@@ -179,7 +185,7 @@ export function DocsHumanSignoff() {
                       {['colDate', 'colDoc', 'colCounter', 'colTotal'].map((key) => (
                         <th
                           key={key}
-                          className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wide text-neutral-900/35"
+                          className="px-3 py-2 text-[10px] font-semibold tracking-wide text-neutral-900/35"
                         >
                           {rowT(key)}
                         </th>
@@ -189,16 +195,16 @@ export function DocsHumanSignoff() {
                   <tbody>
                     <tr className={cn(!hasDraft && 'opacity-35')}>
                       <td className="whitespace-nowrap px-3 py-3 text-[12px] font-semibold tabular-nums text-neutral-900">
-                        {hasDraft ? '06.07.26' : '—'}
+                        {hasDraft ? '06.07.26' : '...'}
                       </td>
                       <td className="whitespace-nowrap px-3 py-3 text-[12px] tabular-nums text-neutral-900">
-                        {hasDraft ? '00042117-8891' : '—'}
+                        {hasDraft ? '00042117-8891' : '...'}
                       </td>
                       <td className="max-w-[150px] truncate px-3 py-3 text-[12px] text-neutral-900">
-                        {hasDraft ? 'Goodwill, Saburtalo' : '—'}
+                        {hasDraft ? 'Goodwill, Saburtalo' : '...'}
                       </td>
                       <td className="whitespace-nowrap px-3 py-3 text-[13px] font-extrabold tabular-nums text-neutral-900">
-                        {hasDraft ? '175.00' : '—'}
+                        {hasDraft ? '175.00' : '...'}
                       </td>
                     </tr>
                   </tbody>
@@ -207,14 +213,12 @@ export function DocsHumanSignoff() {
 
               {isSigned && frame.resultKey && (
                 <motion.p
-                  initial={reduced ? false : { opacity: 0, scale: 0.96 }}
+                  initial={false}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: reduced ? 0 : 0.24, ease: [0.23, 1, 0.32, 1] }}
                   className="mt-4 flex min-h-[44px] items-center justify-center rounded-xl bg-[#10b981]/12 px-4 text-center text-[13px] font-extrabold text-[#065f46] shadow-[0_0_0_1px_#10b981]"
                 >
-                  <span aria-hidden="true" className="mr-2">
-                    ✓
-                  </span>
+                  <Ico name="solar:check-circle-bold-duotone" className="mr-2 h-5 w-5" />
                   {t(frame.resultKey)}
                 </motion.p>
               )}

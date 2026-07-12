@@ -33,13 +33,10 @@ export function MagneticButton({ children, className }: MagneticButtonProps) {
   const sx = useSpring(x, { stiffness: 260, damping: 18, mass: 0.4 });
   const sy = useSpring(y, { stiffness: 260, damping: 18, mass: 0.4 });
 
-  if (reducedMotion()) {
-    return <span className={cn('inline-flex', className)}>{children}</span>;
-  }
-
   const clamp = (v: number) => Math.max(-MAX_PULL, Math.min(MAX_PULL, v));
 
   const handleMove = (e: React.PointerEvent<HTMLSpanElement>) => {
+    if (reducedMotion()) return;
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
@@ -50,6 +47,7 @@ export function MagneticButton({ children, className }: MagneticButtonProps) {
   };
 
   const reset = () => {
+    if (reducedMotion()) return;
     x.set(0);
     y.set(0);
   };

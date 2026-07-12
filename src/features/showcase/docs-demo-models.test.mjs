@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import * as docsDemoModels from './docs-demo-models.mjs';
+import { createDemoLoop } from '../home/components/lib/demo-loop.mjs';
 
 const {
   ACCURACY_LINES,
@@ -52,6 +53,28 @@ function createClock() {
     get pendingCount() {
       return pending.size;
     },
+  };
+}
+
+function createLoopHarness() {
+  let callback;
+  const listeners = new Map();
+  const document = {
+    hidden: false,
+    addEventListener(name, next) { listeners.set(name, next); },
+    removeEventListener(name) { listeners.delete(name); },
+  };
+  class Observer {
+    constructor(next) { callback = next; }
+    observe() {}
+    disconnect() {}
+  }
+  return {
+    Observer,
+    document,
+    enter(target) { callback([{ target, isIntersecting: true, intersectionRatio: 1 }]); },
+    leave(target) { callback([{ target, isIntersecting: false, intersectionRatio: 0 }]); },
+    hide() { document.hidden = true; listeners.get('visibilitychange')?.(); },
   };
 }
 
@@ -170,4 +193,97 @@ test('reduced motion renders the safe 80 line without timers', () => {
 
   assert.deepEqual(seen, [80]);
   assert.equal(clock.pendingCount, 0);
+});
+
+test('canonical loop starts when visible, holds the final state for 2000ms, then repeats', () => {
+  const clock = createClock();
+  const harness = createLoopHarness();
+  const target = {};
+  const seen = [];
+  let stageTimer = null;
+  const loop = createDemoLoop({
+    target,
+    cycleMs: 3100,
+    holdMs: 2000,
+    play() {
+      seen.push('start');
+      stageTimer = clock.setTimeout(() => seen.push('final'), 3100);
+    },
+    showFinal: () => seen.push('final'),
+    reset: () => seen.push('reset'),
+    stop() {
+      if (stageTimer !== null) clock.clearTimeout(stageTimer);
+      stageTimer = null;
+    },
+    Observer: harness.Observer,
+    pageDocument: harness.document,
+    schedule: clock.setTimeout,
+    cancelScheduled: clock.clearTimeout,
+  });
+
+  assert.deepEqual(seen, []);
+  harness.enter(target);
+  assert.deepEqual(seen, ['start']);
+  clock.advance(3100);
+  assert.deepEqual(seen, ['start', 'final']);
+  clock.advance(1999);
+  assert.deepEqual(seen, ['start', 'final']);
+  clock.advance(1);
+  assert.deepEqual(seen, ['start', 'final', 'reset', 'start']);
+  loop.cleanup();
+});
+
+test('canonical loop resets offscreen and when the page is hidden', () => {
+  const clock = createClock();
+  const harness = createLoopHarness();
+  const target = {};
+  const seen = [];
+  const loop = createDemoLoop({
+    target,
+    cycleMs: 100,
+    holdMs: 2000,
+    play: () => seen.push('play'),
+    showFinal: () => seen.push('final'),
+    reset: () => seen.push('reset'),
+    stop: () => seen.push('stop'),
+    Observer: harness.Observer,
+    pageDocument: harness.document,
+    schedule: clock.setTimeout,
+    cancelScheduled: clock.clearTimeout,
+  });
+  harness.enter(target);
+  harness.leave(target);
+  assert.deepEqual(seen, ['play', 'stop', 'reset']);
+  harness.enter(target);
+  harness.hide();
+  assert.deepEqual(seen.slice(-3), ['play', 'stop', 'reset']);
+  loop.cleanup();
+});
+
+test('manual control persists until replay explicitly resumes autoplay', () => {
+  const clock = createClock();
+  const harness = createLoopHarness();
+  const target = {};
+  const seen = [];
+  const loop = createDemoLoop({
+    target,
+    cycleMs: 100,
+    holdMs: 2000,
+    play: () => seen.push('play'),
+    showFinal: () => seen.push('final'),
+    reset: () => seen.push('reset'),
+    stop: () => seen.push('stop'),
+    Observer: harness.Observer,
+    pageDocument: harness.document,
+    schedule: clock.setTimeout,
+    cancelScheduled: clock.clearTimeout,
+  });
+  harness.enter(target);
+  loop.takeControl();
+  seen.push('manual');
+  clock.advance(5000);
+  assert.equal(seen.at(-1), 'manual');
+  loop.replay();
+  assert.deepEqual(seen.slice(-3), ['stop', 'reset', 'play']);
+  loop.cleanup();
 });

@@ -3,29 +3,34 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const COMPONENTS = [
-  {
-    file: 'DocsAccuracy.tsx',
-    root: /<div ref=\{sectionRef\}>\s*<span className="text-\[12px\] uppercase/,
-  },
-  {
-    file: 'DocsHumanSignoff.tsx',
-    root: /<div\s+ref=\{sectionRef\}\s+className="min-w-0 rounded-2xl bg-\[#fafafa\] p-5/,
-  },
+  ['DocsToRow.tsx', '3100'],
+  ['DocsSplit.tsx', '5600'],
+  ['DocsScans.tsx', '3600'],
+  ['DocsAccuracy.tsx', '7200'],
+  ['DocsHumanSignoff.tsx', '7200'],
+  ['HeroProof.tsx', '2100'],
 ];
 
-test('timeline remains stopped until intersection and starts only once', async () => {
-  const { startTimelineWhenVisible } = await import('./docs-demo-visibility.mjs');
+test('docs loop wrapper applies the shared visibility and hold defaults', async () => {
+  const { createDocsDemoLoop } = await import('./docs-demo-visibility.mjs');
   const observer = createObserverHarness();
   const node = { id: 'docs-demo' };
   let plays = 0;
+  let finals = 0;
 
-  const cleanup = startTimelineWhenVisible({
-    node,
+  const loop = createDocsDemoLoop({
+    target: node,
     reducedMotion: false,
+    cycleMs: 100,
     play: () => {
       plays += 1;
     },
-    createObserver: observer.create,
+    showFinal: () => {
+      finals += 1;
+    },
+    reset: () => {},
+    stop: () => {},
+    Observer: observer.Observer,
   });
 
   assert.equal(plays, 0);
@@ -38,91 +43,109 @@ test('timeline remains stopped until intersection and starts only once', async (
   observer.trigger(true, 0.34);
   assert.equal(plays, 0);
 
-  observer.trigger(true, 0.35);
-  observer.trigger(true, 1);
+  observer.trigger(true, 0.35, node);
   assert.equal(plays, 1);
-  assert.equal(observer.disconnectCount(), 1);
+  assert.equal(finals, 0);
 
-  cleanup();
+  loop.cleanup();
   assert.equal(observer.disconnectCount(), 1);
 });
 
-test('cleanup invalidates a callback that was already queued by the observer', async () => {
-  const { startTimelineWhenVisible } = await import('./docs-demo-visibility.mjs');
+test('docs loop wrapper cleanup invalidates a queued observer callback', async () => {
+  const { createDocsDemoLoop } = await import('./docs-demo-visibility.mjs');
   const observer = createObserverHarness();
   let plays = 0;
+  const node = { id: 'docs-demo' };
 
-  const cleanup = startTimelineWhenVisible({
-    node: { id: 'docs-demo' },
+  const loop = createDocsDemoLoop({
+    target: node,
     reducedMotion: false,
+    cycleMs: 100,
     play: () => {
       plays += 1;
     },
-    createObserver: observer.create,
+    showFinal: () => {},
+    reset: () => {},
+    stop: () => {},
+    Observer: observer.Observer,
   });
 
-  cleanup();
-  observer.trigger(true);
+  loop.cleanup();
+  observer.trigger(true, 1, node);
 
   assert.equal(plays, 0);
   assert.equal(observer.disconnectCount(), 1);
 });
 
-test('reduced motion emits the final player state immediately without observing', async () => {
-  const { startTimelineWhenVisible } = await import('./docs-demo-visibility.mjs');
-  let plays = 0;
+test('docs loop wrapper reduced motion renders the final state without observing', async () => {
+  const { createDocsDemoLoop } = await import('./docs-demo-visibility.mjs');
+  let finals = 0;
   let observers = 0;
 
-  const cleanup = startTimelineWhenVisible({
-    node: { id: 'docs-demo' },
+  const loop = createDocsDemoLoop({
+    target: { id: 'docs-demo' },
     reducedMotion: true,
-    play: () => {
-      plays += 1;
+    cycleMs: 100,
+    play: () => {},
+    showFinal: () => {
+      finals += 1;
     },
-    createObserver: () => {
+    reset: () => {},
+    stop: () => {},
+    Observer: class {
+      constructor() {
       observers += 1;
-      throw new Error('reduced motion must not create an observer');
+      }
     },
   });
 
-  assert.equal(plays, 1);
+  assert.equal(finals, 1);
   assert.equal(observers, 0);
-  cleanup();
+  loop.cleanup();
 });
 
-for (const { file, root } of COMPONENTS) {
-  test(`${file} gates its real story box and cleans up both lifecycles`, () => {
+for (const [file, cycleMs] of COMPONENTS) {
+  test(`${file} uses the canonical visible autoplay loop`, () => {
     const source = readFileSync(new URL(file, import.meta.url), 'utf8');
 
-    assert.match(source, /import \{ startTimelineWhenVisible \} from '\.\/docs-demo-visibility\.mjs';/);
+    assert.match(source, /import \{ createDocsDemoLoop \} from '\.\/docs-demo-visibility\.mjs';/);
     assert.match(source, /const sectionRef = useRef<HTMLDivElement \| null>\(null\);/);
     assert.match(
       source,
-      /startTimelineWhenVisible\(\{[\s\S]*?node: sectionRef\.current,[\s\S]*?play: timeline\.play,[\s\S]*?\}\)/,
+      new RegExp(`createDocsDemoLoop\\(\\{[\\s\\S]*?target: sectionRef\\.current,[\\s\\S]*?cycleMs: ${cycleMs},[\\s\\S]*?play:[\\s\\S]*?showFinal:[\\s\\S]*?reset:[\\s\\S]*?stop:`),
     );
-    assert.match(source, root);
-    assert.match(source, /stopVisibility\(\);[\s\S]*?timeline\.cancel\(\);/);
-    assert.doesNotMatch(source, /timeline\.play\(\)/);
+    assert.match(source, /loopRef\.current\?\.replay\(\)/);
+    assert.match(source, /loop\.cleanup\(\)/);
+    assert.doesNotMatch(source, /createDemoLoop|holdMs|startTimelineWhenVisible/);
   });
 }
 
-test('DocsAccuracy manual slider cancels deferred visibility and active timers', () => {
-  const source = readFileSync(new URL('DocsAccuracy.tsx', import.meta.url), 'utf8');
-
-  assert.match(source, /const visibilityCleanupRef = useRef<\(\(\) => void\) \| null>\(null\);/);
-  assert.match(source, /visibilityCleanupRef\.current = stopVisibility;/);
-  assert.match(
-    source,
-    /const setManualLine = useCallback\(\(value: number\) => \{[\s\S]*?visibilityCleanupRef\.current\?\.\(\);[\s\S]*?visibilityCleanupRef\.current = null;[\s\S]*?playerRef\.current\?\.cancel\(\);[\s\S]*?setLine\(value\);/,
-  );
-});
+for (const [file, handler, setter] of [
+  ['DocsSplit.tsx', 'place', 'setPlaced'],
+  ['DocsScans.tsx', 'selectScan', 'setPick'],
+  ['DocsAccuracy.tsx', 'setManualLine', 'setLine'],
+]) {
+  test(`${file} takes control before a manual value is stored`, () => {
+    const source = readFileSync(new URL(file, import.meta.url), 'utf8');
+    assert.match(
+      source,
+      new RegExp(`const ${handler} = [\\s\\S]*?\\{[\\s\\S]*?loopRef\\.current\\?\\.takeControl\\(\\);[\\s\\S]*?${setter}\\(`),
+    );
+  });
+}
 
 test('DocsAccuracy hydrates from the same 96 line before reduced motion resolves', () => {
   const source = readFileSync(new URL('DocsAccuracy.tsx', import.meta.url), 'utf8');
 
   assert.match(source, /useState\(\(\) => initialAccuracyLine\(false\)\)/);
   assert.doesNotMatch(source, /useState\(\(\) => initialAccuracyLine\(reduced\)\)/);
-  assert.match(source, /reducedMotion: Boolean\(reduced\)/);
+  assert.match(source, /showFinal: \(\) => setLine\(80\)/);
+});
+
+test('DocsToRow gives equal cell values distinct React keys', () => {
+  const source = readFileSync(new URL('DocsToRow.tsx', import.meta.url), 'utf8');
+  assert.match(source, /key=\{`\$\{index\}-\$\{value\}`\}/);
+  assert.doesNotMatch(source, /<td key=\{value\}/);
 });
 
 function createObserverHarness() {
@@ -132,20 +155,20 @@ function createObserverHarness() {
   let disconnects = 0;
 
   return {
-    create(nextCallback, options) {
-      callback = nextCallback;
-      currentOptions = options;
-      return {
-        observe(node) {
+    Observer: class {
+      constructor(nextCallback, options) {
+        callback = nextCallback;
+        currentOptions = options;
+      }
+      observe(node) {
           currentNode = node;
-        },
-        disconnect() {
-          disconnects += 1;
-        },
-      };
+      }
+      disconnect() {
+        disconnects += 1;
+      }
     },
-    trigger(isIntersecting, intersectionRatio = isIntersecting ? 1 : 0) {
-      callback?.([{ isIntersecting, intersectionRatio }]);
+    trigger(isIntersecting, intersectionRatio = isIntersecting ? 1 : 0, target = currentNode) {
+      callback?.([{ target, isIntersecting, intersectionRatio }]);
     },
     observedNode: () => currentNode,
     options: () => currentOptions,

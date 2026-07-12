@@ -14,3 +14,10 @@ test('signed-entry table scrolls inside a shrinkable mobile card', () => {
   assert.match(source, /className="mt-4 overflow-x-auto rounded-lg/);
   assert.match(source, /className="w-full min-w-\[430px\] border-collapse text-left"/);
 });
+
+test('sign-off uses bundled icons instead of typed status glyphs', () => {
+  assert.match(source, /import \{ Ico \} from '@\/components\/common\/Ico';/);
+  assert.match(source, /<Ico name="solar:check-circle-bold-duotone"/);
+  assert.doesNotMatch(source, /✓|✅|❌|⚠|—|–/u);
+  assert.doesNotMatch(source, /uppercase/);
+});

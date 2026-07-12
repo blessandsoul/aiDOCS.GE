@@ -1,0 +1,7 @@
+/* Product copy keeps the case authored in each locale. The shared landing
+   components still carry legacy uppercase utility classes. */
+#work .uppercase,
+#faq .uppercase,
+#cta .uppercase {
+  text-transform: none;
+}

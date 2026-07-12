@@ -11,7 +11,7 @@ import {
   initialAccuracyLine,
   partitionFields,
 } from '@/features/showcase/docs-demo-models.mjs';
-import { startTimelineWhenVisible } from './docs-demo-visibility.mjs';
+import { createDocsDemoLoop } from './docs-demo-visibility.mjs';
 
 /* =========================================================================
    DocsAccuracy: HOW it works. He sets the line himself and watches what it costs him.
@@ -60,6 +60,7 @@ const FIELDS: Field[] = [
 const MIN = 35;
 const MAX = 100;
 type TimelinePlayer = { play: () => void; replay: () => void; cancel: () => void };
+type DemoLoop = ReturnType<typeof createDocsDemoLoop>;
 
 type RowState = 'auto' | 'human' | 'wrong';
 
@@ -85,40 +86,39 @@ export function DocsAccuracy() {
   const t = useTranslations('product.accuracy');
   const reduced = useReducedMotion();
   const [line, setLine] = useState(() => initialAccuracyLine(false));
-  const playerRef = useRef<TimelinePlayer | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
-  const visibilityCleanupRef = useRef<(() => void) | null>(null);
+  const loopRef = useRef<DemoLoop | null>(null);
 
   useEffect(() => {
-    const timeline = createTimelinePlayer({
+    if (!sectionRef.current) return;
+    const timeline: TimelinePlayer = createTimelinePlayer({
       stages: ACCURACY_LINES,
       onStage: setLine,
-      reducedMotion: Boolean(reduced),
     });
-    playerRef.current = timeline;
-    const stopVisibility = startTimelineWhenVisible({
-      node: sectionRef.current,
+    const loop = createDocsDemoLoop({
+      target: sectionRef.current,
       reducedMotion: Boolean(reduced),
+      cycleMs: 7200,
       play: timeline.play,
+      showFinal: () => setLine(80),
+      reset: () => setLine(96),
+      stop: timeline.cancel,
     });
-    visibilityCleanupRef.current = stopVisibility;
+    loopRef.current = loop;
 
     return () => {
-      stopVisibility();
-      if (visibilityCleanupRef.current === stopVisibility) visibilityCleanupRef.current = null;
+      loop.cleanup();
       timeline.cancel();
-      if (playerRef.current === timeline) playerRef.current = null;
+      if (loopRef.current === loop) loopRef.current = null;
     };
   }, [reduced]);
 
   const setManualLine = useCallback((value: number) => {
-    visibilityCleanupRef.current?.();
-    visibilityCleanupRef.current = null;
-    playerRef.current?.cancel();
+    loopRef.current?.takeControl();
     setLine(value);
   }, []);
 
-  const replay = useCallback(() => playerRef.current?.replay(), []);
+  const replay = useCallback(() => loopRef.current?.replay(), []);
 
   const { auto, human, wrong, boundary } = useMemo(
     () => partitionFields(FIELDS, line),
@@ -175,7 +175,7 @@ export function DocsAccuracy() {
     <SectionContainer className="py-20 md:py-28">
       <div className="grid gap-10 lg:grid-cols-[minmax(280px,400px)_1fr] lg:gap-14">
         <div ref={sectionRef}>
-          <span className="text-[12px] uppercase tracking-wide text-neutral-900/40">
+          <span className="text-[12px] tracking-wide text-neutral-900/40">
             {t('eyebrow')}
           </span>
           <h2 className="mt-4 text-balance font-display text-3xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-4xl">
@@ -273,7 +273,7 @@ export function DocsAccuracy() {
         {/* the document, with its doubt showing */}
         <div className="rounded-2xl bg-[#fafafa] p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.06)] md:p-6">
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <span className="text-[11px] uppercase tracking-wide text-neutral-900/35">
+            <span className="text-[11px] tracking-wide text-neutral-900/35">
               {t('doc')}
             </span>
             <span className="text-[11px] tabular-nums text-neutral-900/35">{t('sample')}</span>
@@ -310,7 +310,7 @@ function TheLine({
         aria-hidden="true"
       />
       <span
-        className="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white"
+        className="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide text-white"
         style={{ background: 'var(--brand-cta)' }}
       >
         <span className="tabular-nums">{value}</span> {label}
@@ -377,7 +377,7 @@ function Row({
           </span>
           <span
             className={cn(
-              'w-[78px] shrink-0 rounded-full px-2 py-0.5 text-center text-[9px] font-bold uppercase leading-tight',
+              'w-[78px] shrink-0 rounded-full px-2 py-0.5 text-center text-[9px] font-bold leading-tight',
               tone.chip,
             )}
           >
