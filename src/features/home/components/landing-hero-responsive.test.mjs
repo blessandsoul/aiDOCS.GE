@@ -41,7 +41,7 @@ test('mobile hero keeps its grid and animated headline inside the padded viewpor
 
 test('hero proof uses the canonical loop and bundled status icon', () => {
   assert.match(proofSource, /createDocsDemoLoop\(/);
-  assert.match(proofSource, /cycleMs: 2100/);
+  assert.match(proofSource, /cycleMs: 6000/);
   assert.doesNotMatch(proofSource, /createDemoLoop|holdMs/);
   assert.match(proofSource, /<Ico name="solar:check-circle-bold-duotone"/);
   assert.doesNotMatch(proofSource, /uppercase|✓|✅|❌|⚠|—|–/u);

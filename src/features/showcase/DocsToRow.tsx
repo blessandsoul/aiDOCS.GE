@@ -61,9 +61,9 @@ const DOCS: Doc[] = [
   },
 ];
 
-const FIELD_MS = 210;
-const COLLAPSE_AT = 2200;
-const POSTED_AT = 3100;
+const FIELD_MS = 350;
+const COLLAPSE_AT = 4300;
+const POSTED_AT = 6400;
 
 export function DocsToRow() {
   const t = useTranslations('product.row');
@@ -94,7 +94,7 @@ export function DocsToRow() {
     const loop = createDocsDemoLoop({
       target: sectionRef.current,
       reducedMotion: Boolean(reduced),
-      cycleMs: 3100,
+      cycleMs: 6400,
       play: play,
       showFinal: () => setMs(POSTED_AT),
       reset: () => setMs(0),
@@ -130,7 +130,7 @@ export function DocsToRow() {
         <div className="flex flex-wrap items-center gap-2">
           <span className="mr-1 text-[12px] tracking-wide text-neutral-900/35">{t('pick')}</span>
           {DOCS.map((item, index) => (
-            <button key={item.id} type="button" onClick={() => selectDoc(index)} aria-pressed={index === pick} className={cn('min-h-[40px] rounded-full px-4 text-[13px] font-medium transition-colors', index === pick ? 'bg-[var(--brand)] text-white' : 'bg-[#fafafa] text-[#525252] shadow-[0_0_0_1px_rgba(0,0,0,0.06)]')}>
+            <button key={item.id} type="button" onClick={() => selectDoc(index)} aria-pressed={index === pick} className={cn('min-h-[44px] rounded-full px-4 text-[13px] font-medium transition-colors', index === pick ? 'bg-[var(--brand)] text-white' : 'bg-[#fafafa] text-[#525252] shadow-[0_0_0_1px_rgba(0,0,0,0.06)]')}>
               {t(item.id)}
             </button>
           ))}

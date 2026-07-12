@@ -42,14 +42,14 @@ export function DocsScans() {
     const play = () => {
       clear();
       setPick(0);
-      timers.current.push(setTimeout(() => setPick(1), 1200));
-      timers.current.push(setTimeout(() => setPick(2), 2400));
-      timers.current.push(setTimeout(() => setPick(3), 3600));
+      timers.current.push(setTimeout(() => setPick(1), 1800));
+      timers.current.push(setTimeout(() => setPick(2), 3600));
+      timers.current.push(setTimeout(() => setPick(3), 6000));
     };
     const loop = createDocsDemoLoop({
       target: sectionRef.current,
       reducedMotion: Boolean(reduced),
-      cycleMs: 3600,
+      cycleMs: 6000,
       play: play,
       showFinal: () => setPick(3),
       reset: () => setPick(0),

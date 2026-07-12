@@ -47,13 +47,13 @@ export function HeroProof() {
     const play = () => {
       clear();
       setBeat(0);
-      timerRef.current.push(setTimeout(() => setBeat(1), 1400));
-      timerRef.current.push(setTimeout(() => setBeat(2), 2100));
+      timerRef.current.push(setTimeout(() => setBeat(1), 3200));
+      timerRef.current.push(setTimeout(() => setBeat(2), 6000));
     };
     const loop = createDocsDemoLoop({
       target: sectionRef.current,
       reducedMotion: Boolean(reduced),
-      cycleMs: 2100,
+      cycleMs: 6000,
       play: play,
       showFinal: () => setBeat(2),
       reset: () => setBeat(0),
@@ -73,6 +73,17 @@ export function HeroProof() {
 
   return (
     <div ref={sectionRef} className="rounded-3xl bg-white/70 p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.07),0_28px_60px_-40px_rgba(0,0,0,0.45)] backdrop-blur-sm md:p-6">
+      <div className="mb-3 flex justify-end">
+        <button
+          type="button"
+          onClick={replay}
+          aria-label={t('replay')}
+          data-demo-replay="hero"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-neutral-900 shadow-[0_0_0_1px_rgba(0,0,0,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2"
+        >
+          <Ico name="solar:refresh-bold-duotone" className="h-4 w-4" />
+        </button>
+      </div>
       <div className="grid grid-cols-1 items-center gap-4 sm:grid-cols-[86px_minmax(0,1fr)] md:grid-cols-[104px_minmax(0,1fr)] md:gap-5">
         {/* the paper. deliberately ugly: this is what actually arrives. */}
         <div
@@ -192,11 +203,8 @@ export function HeroProof() {
                   </tbody>
                 </table>
               </div>
-              <div className="mt-2.5 flex items-center justify-between gap-3">
+              <div className="mt-2.5 flex items-center gap-3">
                 <p className="text-[11px] leading-snug text-neutral-900/45">{t('note')}</p>
-                <button type="button" onClick={replay} aria-label={t('replay')} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-neutral-900 shadow-[0_0_0_1px_rgba(0,0,0,0.08)]">
-                  <Ico name="solar:refresh-bold-duotone" className="h-4 w-4" />
-                </button>
               </div>
             </motion.div>
           )}

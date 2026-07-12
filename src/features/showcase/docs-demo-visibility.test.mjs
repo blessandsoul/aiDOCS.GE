@@ -3,12 +3,12 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const COMPONENTS = [
-  ['DocsToRow.tsx', '3100'],
-  ['DocsSplit.tsx', '5600'],
-  ['DocsScans.tsx', '3600'],
+  ['DocsToRow.tsx', '6400'],
+  ['DocsSplit.tsx', '6000'],
+  ['DocsScans.tsx', '6000'],
   ['DocsAccuracy.tsx', '7200'],
   ['DocsHumanSignoff.tsx', '7200'],
-  ['HeroProof.tsx', '2100'],
+  ['HeroProof.tsx', '6000'],
 ];
 
 test('docs loop wrapper applies the shared visibility and hold defaults', async () => {
@@ -119,6 +119,18 @@ for (const [file, cycleMs] of COMPONENTS) {
     assert.doesNotMatch(source, /createDemoLoop|holdMs|startTimelineWhenVisible/);
   });
 }
+
+test('every active docs story lasts between 6 and 10 seconds before the final hold', () => {
+  for (const [file] of COMPONENTS) {
+    const source = readFileSync(new URL(file, import.meta.url), 'utf8');
+    const match = source.match(/cycleMs:\s*(\d+)/u);
+
+    assert.ok(match, `${file} must declare its active story duration`);
+    const cycleMs = Number(match[1]);
+    assert.ok(cycleMs >= 6000, `${file} active story is only ${cycleMs}ms`);
+    assert.ok(cycleMs <= 10000, `${file} active story is ${cycleMs}ms`);
+  }
+});
 
 for (const [file, handler, setter] of [
   ['DocsSplit.tsx', 'place', 'setPlaced'],

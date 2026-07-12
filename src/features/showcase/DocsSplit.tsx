@@ -51,13 +51,13 @@ export function DocsSplit() {
         timers.current.push(setTimeout(() => {
           setPlaced((current) => ({ ...current, [doc.id]: doc.answer }));
           if (index === DOCS.length - 1) setRevealed(true);
-        }, (index + 1) * 700));
+        }, (index + 1) * 750));
       });
     };
     const loop = createDocsDemoLoop({
       target: sectionRef.current,
       reducedMotion: Boolean(reduced),
-      cycleMs: 5600,
+      cycleMs: 6000,
       play: play,
       showFinal: () => {
         setPlaced(FINAL_PLACED);
@@ -134,7 +134,7 @@ export function DocsSplit() {
 }
 
 function Choose({ onClick, primary, children }: { onClick: () => void; primary?: boolean; children: React.ReactNode }) {
-  return <button type="button" onClick={onClick} className={cn('min-h-[40px] rounded-full px-4 text-[12px] font-semibold', primary ? 'bg-[var(--brand)] text-white' : 'bg-[#f0f0f0] text-neutral-900/70')}>{children}</button>;
+  return <button type="button" onClick={onClick} className={cn('min-h-[44px] rounded-full px-4 text-[12px] font-semibold', primary ? 'bg-[var(--brand)] text-white' : 'bg-[#f0f0f0] text-neutral-900/70')}>{children}</button>;
 }
 
 function Bin({ title, tone, docs, t, reveal, reduced }: { title: string; tone: Bucket; docs: { id: string; answer: Bucket }[]; t: (key: string) => string; reveal: boolean; reduced: boolean | null }) {
