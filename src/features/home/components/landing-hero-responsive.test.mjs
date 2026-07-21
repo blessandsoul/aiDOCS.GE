@@ -17,13 +17,15 @@ const magneticSource = readFileSync(
   'utf8',
 );
 
-test('mobile hero keeps the shared static headline and demo inside the padded viewport', () => {
+test('mobile hero keeps the shared rotating headline and demo inside the padded viewport', () => {
   assert.match(heroSource, /data-family-shell="true" className="hero-family-shell/);
   assert.match(heroSource, /className="order-1 min-w-0 text-center/);
   assert.match(heroSource, /className="relative order-2 min-w-0/);
   assert.match(heroSource, /className="order-3 min-w-0 text-center/);
-  assert.match(heroSource, /className="hero-static-accent"/);
-  assert.doesNotMatch(heroSource, /setInterval|setTimeout|caretW|availableWidth/);
+  assert.match(heroSource, /className="typewriter"/);
+  assert.match(heroSource, /data-demo-state="idle"/);
+  assert.match(heroSource, /IntersectionObserver/);
+  assert.doesNotMatch(heroSource, /setInterval|caretW|availableWidth/);
   assert.match(heroCss, /\.hero-family-shell\{width:min\(1140px,calc\(100% - 48px\)\)/);
   assert.match(heroCss, /@media\(max-width:640px\)[^{]*\{[^}]*#hero\{padding-top:96px;/);
   assert.match(heroCss, /#hero \[data-hero-demo\]\{min-height:440px\}/);
@@ -53,7 +55,7 @@ test('product copy uses the shared authored-case typography without a local over
   assert.doesNotMatch(heroSource, /landing-product-copy\.css/);
   assert.match(productCopyCss, /#work \.uppercase[\s\S]*?#faq \.uppercase[\s\S]*?#cta \.uppercase/u);
   assert.match(productCopyCss, /text-transform: none;/u);
-  assert.match(heroSource, /className="hero-static-accent"/);
+  assert.match(heroSource, /className="typewriter"/);
   assert.doesNotMatch(heroSource, /uppercase|text-transform/u);
 });
 

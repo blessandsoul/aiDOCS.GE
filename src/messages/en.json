@@ -58,11 +58,13 @@
       "description": "aiNOW sets up aiDOCS for selected documents. It reads fields, marks uncertain values, and prepares rows for review."
     },
     "hero": {
-      "lead": "A document becomes a",
+      "owner": "Your",
+      "role": "document manager",
+      "lead": "automatically turns a file into",
       "taglinePrefix": "aiNOW",
       "taglineWorks": "prepares the row",
-      "typewriterWords": "row,draft,record,import,report",
-      "typewriterPrefill": "row",
+      "typewriterWords": "data,record,table,report,archive",
+      "typewriterPrefill": "data",
       "ctaResults": "See the document flow",
       "ctaCall": "Contact aiNOW",
       "commitment": "aiNOW tests the flow on sample documents and shows the result before setup.",
