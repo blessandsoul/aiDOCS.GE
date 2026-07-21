@@ -47,6 +47,9 @@ const accuracyKeys = [
   'w11',
   'w12',
   'replay',
+  'autoReady',
+  'reviewReady',
+  'businessResult',
 ];
 
 const signoffKeys = [
@@ -63,6 +66,8 @@ const signoffKeys = [
   'orisReady',
   'outcome',
   'replay',
+  'currentStage',
+  'businessResult',
 ];
 
 function assertNamespace(locale, namespace, keys) {
@@ -77,6 +82,34 @@ test('all showcase locales provide every confidence and sign-off message', () =>
   for (const [locale, messages] of Object.entries(locales)) {
     assertNamespace(locale, messages.product.accuracy, accuracyKeys);
     assertNamespace(locale, messages.product.signoff, signoffKeys);
+  }
+});
+
+test('all five demo namespaces, capabilities, and the hero story keep exact locale parity', () => {
+  for (const namespace of ['row', 'split', 'scans', 'accuracy', 'signoff', 'capabilities', 'heroStory']) {
+    const expected = Object.keys(locales.en.product[namespace]).sort();
+    for (const locale of localeNames.slice(1)) {
+      assert.deepEqual(
+        Object.keys(locales[locale].product[namespace]).sort(),
+        expected,
+        `${locale}.${namespace} differs from en.${namespace}`,
+      );
+    }
+  }
+});
+
+test('each locale provides exactly five plain capability outcomes', () => {
+  for (const [locale, messages] of Object.entries(locales)) {
+    const capabilities = messages.product.capabilities;
+    assert.equal(typeof capabilities.eyebrow, 'string', `${locale}.capabilities.eyebrow`);
+    assert.equal(typeof capabilities.title, 'string', `${locale}.capabilities.title`);
+    assert.equal(typeof capabilities.intro, 'string', `${locale}.capabilities.intro`);
+    assert.equal(typeof capabilities.outcomeLabel, 'string', `${locale}.capabilities.outcomeLabel`);
+    assert.deepEqual(Object.keys(capabilities.items), ['1', '2', '3', '4', '5']);
+    for (const item of Object.values(capabilities.items)) {
+      assert.deepEqual(Object.keys(item).sort(), ['description', 'result', 'title']);
+      assert.ok(Object.values(item).every((value) => typeof value === 'string' && value.length > 0));
+    }
   }
 });
 

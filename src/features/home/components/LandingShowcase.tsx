@@ -1,37 +1,35 @@
 'use client';
 
-import { DocsToRow } from '@/features/showcase/DocsToRow';
-import { DocsSplit } from '@/features/showcase/DocsSplit';
-import { DocsScans } from '@/features/showcase/DocsScans';
-import { DocsAccuracy } from '@/features/showcase/DocsAccuracy';
-import { DocsHumanSignoff } from '@/features/showcase/DocsHumanSignoff';
+import { useTranslations } from 'next-intl';
 
-/* =========================================================================
-   LandingShowcase: the aiDOCS product slot.
+import { ProductCapabilities } from './ProductCapabilities';
 
-   Five sections, and the order is the argument:
+const ICONS = [
+  'solar:database-bold-duotone',
+  'solar:layers-minimalistic-bold-duotone',
+  'solar:magnifer-bold-duotone',
+  'solar:shield-check-bold-duotone',
+  'solar:user-check-rounded-bold-duotone',
+] as const;
 
-     1. Watch a receipt become a row. The signature. Everyone in this category stops at the
-        extracted JSON. Nobody is buying JSON. The bookkeeper is buying a posted row, so the
-        row is the hero and the extraction is treated as the commodity it is.
-     2. Sort your own pile, and we tell you which half you should not pay us for. Half of our
-        addressable scope is already free inside rs.ge, we say so on our own sales page, and
-        that single admission does more for our credibility than any accuracy claim could.
-     3. The same receipt four ways, including the handwritten one that defeats us. We show the
-        failure on purpose, because a buyer who has been burned before converts on a limit he
-        can check, not on a percentage he cannot.
-     4. The confidence line makes the automation trade-off visible, including the unsafe state.
-     5. An ambiguous date stays held until an accountant corrects and signs the draft.
-   ========================================================================= */
+export function LandingShowcase(): React.ReactElement {
+  const t = useTranslations('product.capabilities');
 
-export function LandingShowcase() {
   return (
-    <div id="showcase" className="landing-showcase">
-      <DocsToRow />
-      <DocsSplit />
-      <DocsScans />
-      <DocsAccuracy />
-      <DocsHumanSignoff />
-    </div>
+    <ProductCapabilities
+      eyebrow={t('eyebrow')}
+      title={t('title')}
+      intro={t('intro')}
+      outcomeLabel={t('outcomeLabel')}
+      items={ICONS.map((icon, index) => {
+        const key = index + 1;
+        return {
+          icon,
+          title: t(`items.${key}.title`),
+          description: t(`items.${key}.description`),
+          result: t(`items.${key}.result`),
+        };
+      })}
+    />
   );
 }

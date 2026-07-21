@@ -2,64 +2,35 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from 'framer-motion';
+
 import { Ico } from '@/components/common/Ico';
 import { SectionContainer } from '@/components/layout/SectionContainer';
 import { cn } from '@/lib/utils';
+
+import { DocsDemoStory } from './DocsDemoStory';
 import { createDocsDemoLoop } from './docs-demo-visibility.mjs';
 
-type Field = { k: string; v: string };
-type Doc = {
-  id: string;
-  fields: Field[];
-  row: { date: string; doc: string; counter: string; net: string; vat: string; total: string };
-};
+type Field = { key: string; value: string };
 type DemoLoop = ReturnType<typeof createDocsDemoLoop>;
 
-const DOCS: Doc[] = [
-  {
-    id: 'd1',
-    fields: [
-      { k: 'Supplier', v: 'Pirelli Tyre S.p.A.' },
-      { k: 'Invoice', v: 'IT-2026-04417' },
-      { k: 'Date', v: '2026-06-28' },
-      { k: 'VAT ID', v: 'IT00860340157' },
-      { k: 'Net', v: '14,280.00 EUR' },
-      { k: 'VAT', v: '0.00 EUR' },
-      { k: 'Total', v: '14,280.00 EUR' },
-      { k: 'Terms', v: 'CIP Tbilisi' },
-    ],
-    row: { date: '28.06.26', doc: 'IT-2026-04417', counter: 'Pirelli Tyre S.p.A.', net: '44 512.80', vat: '0.00', total: '44 512.80' },
-  },
-  {
-    id: 'd2',
-    fields: [
-      { k: 'Account', v: 'GE29 BG00 0000 1234 5678 90' },
-      { k: 'Period', v: '01.06 to 30.06.2026' },
-      { k: 'Counterparty', v: 'Nikora Trade LLC' },
-      { k: 'Reference', v: 'Invoice 8842' },
-      { k: 'Date', v: '2026-06-14' },
-      { k: 'Debit', v: '0.00 GEL' },
-      { k: 'Credit', v: '9,340.00 GEL' },
-      { k: 'Balance', v: '112,904.16 GEL' },
-    ],
-    row: { date: '14.06.26', doc: 'BOG 8842', counter: 'Nikora Trade LLC', net: '7 915.25', vat: '1 424.75', total: '9 340.00' },
-  },
-  {
-    id: 'd3',
-    fields: [
-      { k: 'Merchant', v: 'Goodwill, Saburtalo' },
-      { k: 'Fiscal', v: '00042117-8891' },
-      { k: 'Date', v: '2026-07-02' },
-      { k: 'Items', v: '11' },
-      { k: 'Net', v: '148.31 GEL' },
-      { k: 'VAT', v: '26.69 GEL' },
-      { k: 'Total', v: '175.00 GEL' },
-      { k: 'Paid', v: 'Card, BOG' },
-    ],
-    row: { date: '02.07.26', doc: '00042117-8891', counter: 'Goodwill, Saburtalo', net: '148.31', vat: '26.69', total: '175.00' },
-  },
+const FIELDS: Field[] = [
+  { key: 'sourceSupplier', value: 'Pirelli Tyre S.p.A.' },
+  { key: 'sourceInvoice', value: 'IT-2026-04417' },
+  { key: 'sourceDate', value: '28.06.2026' },
+  { key: 'colNet', value: '44 512.80 GEL' },
+  { key: 'colVat', value: '0.00 GEL' },
+  { key: 'sourceTotal', value: '44 512.80 GEL' },
 ];
+
+const ROW = {
+  date: '28.06.26',
+  doc: 'IT-2026-04417',
+  counterparty: 'Pirelli Tyre S.p.A.',
+  net: '44 512.80',
+  vat: '0.00',
+  total: '44 512.80',
+};
 
 const FIELD_MS = 350;
 const COLLAPSE_AT = 4300;
@@ -68,12 +39,10 @@ const POSTED_AT = 6400;
 export function DocsToRow() {
   const t = useTranslations('product.row');
   const reduced = useReducedMotion();
-  const [pick, setPick] = useState(0);
   const [ms, setMs] = useState(0);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const loopRef = useRef<DemoLoop | null>(null);
-  const doc = DOCS[pick];
 
   const clear = useCallback(() => {
     timers.current.forEach(clearTimeout);
@@ -82,15 +51,19 @@ export function DocsToRow() {
 
   useEffect(() => {
     if (!sectionRef.current) return;
+
     const play = () => {
       clear();
       setMs(0);
-      for (let i = 0; i < 8; i += 1) {
-        timers.current.push(setTimeout(() => setMs((i + 1) * FIELD_MS), (i + 1) * FIELD_MS));
-      }
+      FIELDS.forEach((_, index) => {
+        timers.current.push(
+          setTimeout(() => setMs((index + 1) * FIELD_MS), (index + 1) * FIELD_MS),
+        );
+      });
       timers.current.push(setTimeout(() => setMs(COLLAPSE_AT), COLLAPSE_AT));
       timers.current.push(setTimeout(() => setMs(POSTED_AT), POSTED_AT));
     };
+
     const loop = createDocsDemoLoop({
       target: sectionRef.current,
       reducedMotion: Boolean(reduced),
@@ -101,6 +74,7 @@ export function DocsToRow() {
       stop: clear,
     });
     loopRef.current = loop;
+
     return () => {
       loop.cleanup();
       clear();
@@ -108,78 +82,197 @@ export function DocsToRow() {
     };
   }, [clear, reduced]);
 
-  const selectDoc = (index: number) => {
+  const showResult = () => {
     loopRef.current?.takeControl();
-    setPick(index);
-    setMs(0);
+    setMs(POSTED_AT);
   };
   const replay = () => loopRef.current?.replay();
-  const shown = Math.min(Math.floor(ms / FIELD_MS), doc.fields.length);
-  const collapsing = ms >= COLLAPSE_AT;
+  const shown = Math.min(Math.floor(ms / FIELD_MS), FIELDS.length);
+  const preparing = ms >= COLLAPSE_AT;
   const posted = ms >= POSTED_AT;
+  const status = posted ? 'posted' : preparing ? 'posting' : 'extracting';
 
   return (
-    <SectionContainer className="py-20 md:py-28">
-      <div className="mb-10 max-w-2xl">
-        <span className="text-[12px] tracking-wide text-neutral-900/40">{t('eyebrow')}</span>
-        <h2 className="mt-4 text-balance font-display text-3xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-4xl">{t('heading')}</h2>
-        <p className="mt-3 text-pretty text-[15px] leading-relaxed text-[#525252]">{t('subtitle')}</p>
-      </div>
-
-      <div ref={sectionRef}>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="mr-1 text-[12px] tracking-wide text-neutral-900/35">{t('pick')}</span>
-          {DOCS.map((item, index) => (
-            <button key={item.id} type="button" onClick={() => selectDoc(index)} aria-pressed={index === pick} className={cn('min-h-[44px] rounded-full px-4 text-[13px] font-medium transition-colors', index === pick ? 'bg-[var(--brand)] text-white' : 'bg-[#fafafa] text-[#525252] shadow-[0_0_0_1px_rgba(0,0,0,0.06)]')}>
-              {t(item.id)}
+    <SectionContainer
+      className="py-16 md:py-24 lg:py-28"
+      data-landing-demo="true"
+      data-demo-id="docs-to-row"
+      data-demo-detail={posted ? 'final' : preparing ? 'posting' : `extracting-${shown}`}
+      aria-live="off"
+    >
+      <DocsDemoStory
+        eyebrow={t('eyebrow')}
+        title={t('heading')}
+        description={t('subtitle')}
+        icon="solar:pen-new-square-bold-duotone"
+        result={
+          <p data-demo-outcome className="text-pretty">
+            {t('businessResult')}
+          </p>
+        }
+      >
+        <div
+          ref={sectionRef}
+          aria-live="off"
+          className="min-h-[520px] overflow-hidden rounded-[28px] bg-[#111827] p-4 text-white shadow-[0_26px_64px_-42px_rgba(17,24,39,0.78)] md:p-6"
+        >
+          <div className="flex min-h-11 items-center justify-between gap-3">
+            <span className="flex min-w-0 items-center gap-2 text-[13px] font-extrabold text-white">
+              <Ico name="solar:text-bold-duotone" className="h-5 w-5 shrink-0 text-[var(--brand)]" />
+              <span className="min-w-0 break-all text-[11px] leading-4">IT-2026-04417.pdf</span>
+            </span>
+            <button
+              type="button"
+              onClick={replay}
+              data-demo-replay="docs-to-row"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-xl bg-white/10 px-3 text-[13px] font-semibold text-white shadow-[0_0_0_1px_rgba(255,255,255,0.16)] transition-transform duration-150 active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111827]"
+              aria-label={t('again')}
+            >
+              <Ico name="solar:refresh-bold-duotone" className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('again')}</span>
             </button>
-          ))}
-          <button type="button" onClick={replay} className="ml-auto inline-flex h-12 items-center gap-2 rounded-full bg-[var(--brand)] px-6 text-[14px] font-bold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2">
-            <Ico name="solar:refresh-bold-duotone" className="h-4 w-4" />
-            {t('again')}
-          </button>
-        </div>
-
-        <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(220px,1fr)_1.4fr]">
-          <div className="relative overflow-hidden rounded-2xl bg-[#0e0e11] p-5">
-            <div className="relative mx-auto aspect-[3/4] w-full max-w-[220px] rounded-sm bg-[#f3f1ea] p-3 shadow-lg" style={{ transform: 'rotate(-1.4deg)' }}>
-              <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,transparent_46%,rgba(0,0,0,0.07)_49%,transparent_53%)]" aria-hidden="true" />
-              <span className="block h-2 w-2/3 rounded-sm bg-neutral-900/70" />
-              <span className="mt-4 block h-px w-full bg-neutral-900/15" />
-              {Array.from({ length: 9 }, (_, index) => <span key={index} className="mt-2 block h-1.5 rounded-sm bg-neutral-900/15" style={{ width: `${45 + ((index * 37) % 50)}%` }} />)}
-            </div>
-            <p className="mt-5 text-pretty text-[11px] leading-relaxed text-white/45">{t('commodity')}</p>
           </div>
 
-          <div className="relative min-h-[420px] rounded-2xl bg-[#fafafa] p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.06)] md:p-6">
-            <span className="text-[11px] tracking-wide text-neutral-900/35">{posted ? t('posted') : collapsing ? t('posting') : t('extracting')}</span>
-            <div className="mt-4 flex flex-col gap-1.5">
-              {doc.fields.map((field, index) => (
-                <motion.div key={field.k} initial={false} animate={collapsing ? { opacity: 0, y: 26, scale: 0.94 } : { opacity: index < shown ? 1 : 0.18, y: 0, scale: 1 }} transition={{ duration: reduced ? 0 : 0.24 }} className="flex items-baseline justify-between gap-4 rounded-lg bg-white px-3 py-2 shadow-[0_0_0_1px_rgba(0,0,0,0.05)]">
-                  <span className="text-[12px] text-neutral-900/45">{field.k}</span>
-                  <span className="truncate text-[13px] font-semibold tabular-nums text-neutral-900">{field.v}</span>
-                </motion.div>
-              ))}
-            </div>
-
-            {collapsing && (
-              <motion.div initial={false} animate={{ opacity: 1, y: 0 }} className="absolute inset-x-5 bottom-5 md:inset-x-6 md:bottom-6">
-                <span className="mb-2 block text-[11px] tracking-wide text-neutral-900/35">{t('ledger')}</span>
-                <div className="overflow-x-auto rounded-xl bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.1)]">
-                  <table className="w-full min-w-[520px] border-collapse text-left">
-                    <thead><tr className="border-b border-[#ececec]">{['colDate', 'colDoc', 'colCounter', 'colNet', 'colVat', 'colTotal'].map((key) => <th key={key} className="px-3 py-2 text-[10px] font-semibold tracking-wide text-neutral-900/35">{t(key)}</th>)}<th className="w-8" /></tr></thead>
-                    <tbody><tr style={{ background: posted ? 'color-mix(in srgb, #10b981 9%, white)' : 'transparent' }}>
-                      {[doc.row.date, doc.row.doc, doc.row.counter, doc.row.net, doc.row.vat, doc.row.total].map((value, index) => <td key={`${index}-${value}`} className={cn('whitespace-nowrap px-3 py-3 text-[12px] tabular-nums text-neutral-900', index === 5 && 'font-extrabold')}>{value}</td>)}
-                      <td className="px-2 text-[#065f46]">{posted && <Ico name="solar:check-circle-bold-duotone" className="h-5 w-5" />}</td>
-                    </tr></tbody>
-                  </table>
+          <div className="mt-5 grid min-w-0 gap-4 xl:grid-cols-[minmax(160px,0.72fr)_minmax(0,1.28fr)]">
+            <div className="min-w-0 rounded-2xl bg-[#f5f3ec] p-4 text-[#111827] shadow-[0_0_0_1px_rgba(255,255,255,0.12)]">
+              <span className="text-[10px] font-bold tracking-wide text-[#4B5563]">{t('source')}</span>
+              <p className="mt-4 text-[17px] font-extrabold leading-tight">Pirelli Tyre S.p.A.</p>
+              <p className="mt-1 text-[11px] text-[#4B5563]">INVOICE IT-2026-04417</p>
+              <div className="my-4 h-px bg-[#111827]/10" aria-hidden="true" />
+              <dl className="space-y-3 text-[11px]">
+                <div>
+                  <dt className="text-[#4B5563]">{t('sourceDate')}</dt>
+                  <dd className="mt-0.5 font-bold tabular-nums">28.06.2026</dd>
                 </div>
-                <p className="mt-3 text-[12px] text-neutral-900/50">{t('note')}</p>
-              </motion.div>
+                <div>
+                  <dt className="text-[#4B5563]">{t('sourceTotal')}</dt>
+                  <dd className="mt-0.5 text-[16px] font-extrabold tabular-nums">44 512.80 GEL</dd>
+                </div>
+              </dl>
+              <div className="mt-5 space-y-2" aria-hidden="true">
+                {[82, 64, 91, 55].map((width) => (
+                  <span key={width} className="block h-1.5 rounded-full bg-[#111827]/10" style={{ width: `${width}%` }} />
+                ))}
+              </div>
+            </div>
+
+            <div className="min-w-0">
+              <div className="flex min-h-8 flex-wrap items-center justify-between gap-2">
+                <span className="text-[11px] font-semibold text-white/65">{t('details')}</span>
+                <span className="inline-flex min-h-7 items-center gap-1.5 rounded-full bg-white/10 px-2.5 text-[10px] font-bold text-white">
+                  <Ico
+                    name={posted ? 'solar:check-circle-bold-duotone' : preparing ? 'solar:database-bold-duotone' : 'solar:camera-bold-duotone'}
+                    className="h-3.5 w-3.5 text-[var(--brand)]"
+                  />
+                  {t(status)}
+                </span>
+              </div>
+
+              <div className="mt-3 grid gap-2">
+                {FIELDS.map((field, index) => {
+                  const visible = index < shown || preparing;
+                  return (
+                    <div key={field.key} className="grid min-h-[46px] grid-cols-[minmax(92px,0.8fr)_minmax(0,1.2fr)] items-center gap-3 rounded-xl bg-white/[0.07] px-3 py-2">
+                      <span className="text-[10px] leading-4 text-white/60">{t(field.key)}</span>
+                      <span className="grid min-w-0">
+                        <span
+                          aria-hidden={!visible}
+                          className={cn(
+                            'col-start-1 row-start-1 break-words text-right text-[11px] font-bold tabular-nums text-white transition-[opacity,transform] duration-200',
+                            visible ? 'translate-y-0 opacity-100' : 'translate-y-1 opacity-0',
+                          )}
+                        >
+                          {field.value}
+                        </span>
+                        <span
+                          aria-hidden={visible}
+                          className={cn(
+                            'col-start-1 row-start-1 ml-auto h-2 w-3/4 self-center rounded-full bg-white/14 transition-opacity duration-200',
+                            visible ? 'opacity-0' : 'opacity-100',
+                          )}
+                        />
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                onClick={showResult}
+                disabled={posted}
+                data-demo-manual="docs-to-row"
+                className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--brand)] px-4 text-[12px] font-extrabold text-white transition-[transform,opacity] duration-150 active:scale-[0.98] disabled:cursor-default disabled:opacity-45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#111827]"
+              >
+                <Ico name={posted ? 'solar:check-circle-bold-duotone' : 'solar:arrow-right-bold-duotone'} className="h-4 w-4" />
+                {posted ? t('posted') : t('showResult')}
+              </button>
+            </div>
+          </div>
+
+          <div
+            data-row-ledger-slot="true"
+            className={cn(
+              'mt-4 min-w-0 rounded-2xl bg-white p-3 text-[#111827] transition-[opacity,box-shadow] duration-300',
+              preparing ? 'shadow-[0_0_0_1px_rgba(255,255,255,0.18)]' : 'shadow-[0_0_0_1px_rgba(255,255,255,0.08)]',
             )}
+          >
+            <div className="mb-2 flex items-center justify-between gap-3 px-1">
+              <span className="text-[10px] font-bold text-[#667085]">{t('ledger')}</span>
+              <span className={cn('inline-flex items-center gap-1 text-[10px] font-bold', posted ? 'text-[#065f46]' : 'text-[#667085]')}>
+                <Ico name={posted ? 'solar:check-circle-bold-duotone' : 'solar:clock-circle-bold-duotone'} className="h-3.5 w-3.5" />
+                {t(posted ? 'posted' : 'posting')}
+              </span>
+            </div>
+            <dl className="grid gap-2 rounded-xl bg-[#f8fafc] p-3 sm:hidden">
+              {[
+                [t('colDate'), preparing ? ROW.date : '...'],
+                [t('colCounter'), preparing ? ROW.counterparty : '...'],
+                [t('colTotal'), preparing ? ROW.total : '...'],
+              ].map(([label, value]) => (
+                <div key={label} className="grid grid-cols-[minmax(80px,0.8fr)_minmax(0,1.2fr)] gap-3">
+                  <dt className="text-[9px] font-semibold text-[#4B5563]">{label}</dt>
+                  <dd className="break-words text-right text-[10px] font-extrabold tabular-nums text-[#111827]">{value}</dd>
+                </div>
+              ))}
+            </dl>
+            <div
+              className="hidden w-full min-w-0 max-w-full overflow-x-auto rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-ink)] focus-visible:ring-offset-2 sm:block"
+              role="region"
+              aria-label={t('ledger')}
+              tabIndex={0}
+            >
+              <table className="w-full min-w-[520px] border-collapse text-left">
+                <caption className="sr-only">{t('ledger')}</caption>
+                <thead>
+                  <tr className="border-b border-[#ececec]">
+                    {['colDate', 'colDoc', 'colCounter', 'colNet', 'colVat', 'colTotal'].map((key) => (
+                      <th key={key} scope="col" className="px-2 py-2 text-[9px] font-semibold text-[#667085]">
+                        {t(key)}
+                      </th>
+                    ))}
+                    <th scope="col" className="w-8">
+                      <span className="sr-only">{t('status')}</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className={cn(posted && 'bg-[#10b981]/8')}>
+                    {[ROW.date, ROW.doc, ROW.counterparty, ROW.net, ROW.vat, ROW.total].map((value, index) => (
+                      <td key={`${index}-${value}`} className={cn('whitespace-nowrap px-2 py-3 text-[10px] tabular-nums text-[#111827]', index === 5 && 'font-extrabold')}>
+                        {preparing ? value : '...'}
+                      </td>
+                    ))}
+                    <td className="px-2 text-[#065f46]">
+                      <span className="sr-only">{posted ? t('posted') : t('posting')}</span>
+                      <Ico name={posted ? 'solar:check-circle-bold-duotone' : 'solar:clock-circle-bold-duotone'} className="h-4 w-4" aria-hidden="true" />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
+      </DocsDemoStory>
     </SectionContainer>
   );
 }

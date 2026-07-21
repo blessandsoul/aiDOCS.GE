@@ -8,7 +8,6 @@ const COMPONENTS = [
   ['DocsScans.tsx', '6000'],
   ['DocsAccuracy.tsx', '7200'],
   ['DocsHumanSignoff.tsx', '7200'],
-  ['HeroProof.tsx', '6000'],
 ];
 
 test('docs loop wrapper applies the shared visibility and hold defaults', async () => {
@@ -120,6 +119,25 @@ for (const [file, cycleMs] of COMPONENTS) {
   });
 }
 
+test('hero adapter delegates lifecycle and Replay to the family workflow component', () => {
+  const adapter = readFileSync(new URL('HeroProof.tsx', import.meta.url), 'utf8');
+  const workflow = readFileSync(
+    new URL('../home/components/HeroWorkflowStory.tsx', import.meta.url),
+    'utf8',
+  );
+
+  assert.match(adapter, /<HeroWorkflowStory/u);
+  assert.match(adapter, /mode="orchestrated"/u);
+  assert.match(workflow, /createDemoLoop\(\{/u);
+  assert.match(workflow, /threshold: 0\.35/u);
+  assert.match(workflow, /holdMs: 2_000/u);
+  assert.match(workflow, /showFinal,/u);
+  assert.match(workflow, /reset,/u);
+  assert.match(workflow, /stop,/u);
+  assert.match(workflow, /controllerRef\.current\?\.replay\(\)/u);
+  assert.match(workflow, /controller\.cleanup\(\)/u);
+});
+
 test('every active docs story lasts between 6 and 10 seconds before the final hold', () => {
   for (const [file] of COMPONENTS) {
     const source = readFileSync(new URL(file, import.meta.url), 'utf8');
@@ -130,9 +148,20 @@ test('every active docs story lasts between 6 and 10 seconds before the final ho
     assert.ok(cycleMs >= 6000, `${file} active story is only ${cycleMs}ms`);
     assert.ok(cycleMs <= 10000, `${file} active story is ${cycleMs}ms`);
   }
+
+  const workflow = readFileSync(
+    new URL('../home/components/HeroWorkflowStory.tsx', import.meta.url),
+    'utf8',
+  );
+  const match = workflow.match(/const CYCLE_MS = ([\d_]+);/u);
+  assert.ok(match, 'HeroWorkflowStory must declare its active story duration');
+  const cycleMs = Number(match[1].replaceAll('_', ''));
+  assert.ok(cycleMs >= 6000 && cycleMs <= 10000, `hero story duration is ${cycleMs}ms`);
+  assert.match(workflow, /const ORCHESTRATED_TIMES = \[850,/u);
 });
 
 for (const [file, handler, setter] of [
+  ['DocsToRow.tsx', 'showResult', 'setMs'],
   ['DocsSplit.tsx', 'place', 'setPlaced'],
   ['DocsScans.tsx', 'selectScan', 'setPick'],
   ['DocsAccuracy.tsx', 'setManualLine', 'setLine'],

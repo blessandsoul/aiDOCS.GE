@@ -13,7 +13,9 @@ import {
   type ContactFormData,
 } from "../schemas/contact.schema";
 // facebook-pixel was stripped from this lean build; no-op keeps the call sites intact.
-const trackLead = (_args?: { content_name?: string }) => {};
+const trackLead = (_args?: { content_name?: string }) => {
+  void _args;
+};
 
 export const ContactForm = () => {
   const t = useTranslations("contact");

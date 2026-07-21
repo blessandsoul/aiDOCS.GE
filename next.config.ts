@@ -73,6 +73,16 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
+  async redirects() {
+    return [
+      {
+        source: "/en/blog/process-photographed-receipts-without-manual-data-entry",
+        destination: "/en/blog/photographed-receipt-processing-workflow",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

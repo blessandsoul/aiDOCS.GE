@@ -34,7 +34,10 @@
     "showcase": "See document flow",
     "process": "How it works",
     "faq": "Questions",
-    "cta": "Try your documents"
+    "cta": "Try your documents",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "switchLanguage": "Switch language"
   },
   "landingFooter": {
     "company": "AI NOW LLC, Tbilisi, Georgia",
@@ -51,15 +54,15 @@
   },
   "product": {
     "seo": {
-      "title": "aiDOCS by aiNOW turns documents into accounting rows",
+      "title": "aiDOCS: turn business documents into usable data with aiNOW",
       "description": "aiNOW sets up aiDOCS for selected documents. It reads fields, marks uncertain values, and prepares rows for review."
     },
     "hero": {
-      "lead": "A document becomes an",
+      "lead": "A document becomes a",
       "taglinePrefix": "aiNOW",
       "taglineWorks": "prepares the row",
-      "typewriterWords": "accounting row,reviewed draft,import row",
-      "typewriterPrefill": "accounting row",
+      "typewriterWords": "row,draft,record,import,report",
+      "typewriterPrefill": "row",
       "ctaResults": "See the document flow",
       "ctaCall": "Contact aiNOW",
       "commitment": "aiNOW tests the flow on sample documents and shows the result before setup.",
@@ -91,19 +94,19 @@
       "s6Desc": "The accountant checks the draft and approves the final row."
     },
     "faq": {
-      "headingPre": "Questions about aiNOW",
-      "headingAccent": "and aiDOCS.",
-      "subtitle": "Short answers about the document flow.",
-      "q1": "Which documents fit aiDOCS?",
-      "a1": "aiNOW confirms the supported document types during the sample check.",
-      "q2": "What accuracy does aiDOCS provide?",
-      "a2": "aiNOW measures the supplied sample and shows the result. No fixed rate is promised.",
-      "q3": "Can aiDOCS read Georgian text?",
-      "a3": "Printed Georgian can be tested with the supplied samples.",
-      "q4": "Can aiDOCS read handwriting?",
-      "a4": "Handwriting is not treated as a supported input without a successful sample check.",
-      "q5": "What happens to an uncertain value?",
-      "a5": "aiDOCS holds it for review instead of adding it to the final row.",
+      "headingPre": "Five questions",
+      "headingAccent": "before document processing starts.",
+      "subtitle": "What gets read, what gets checked, and when a human reviews it.",
+      "q1": "What is <brand></brand>?",
+      "a1": "aiDOCS is aiNOW's document processing product. It extracts the fields you need from receipts, contracts, reports, or tables and turns them into a usable format.",
+      "q2": "Which files does aiDOCS support?",
+      "a2": "aiDOCS works with PDFs, scans, photos, and email attachments. Low-quality files are marked for review.",
+      "q3": "How does it handle mistakes?",
+      "a3": "aiDOCS shows low-confidence fields separately. A human reviews amounts, dates, ID numbers, signatures, and other sensitive data.",
+      "q4": "Where does the extracted data go?",
+      "a4": "The result can go to Excel, Google Sheets, a CRM, 1C, or another system if safe import is possible.",
+      "q5": "What result does the business get?",
+      "a5": "The business gets a searchable archive, consistent fields, and less manual data entry.",
       "q6": "Does aiDOCS work with accounting software?",
       "a6": "aiNOW prepares the agreed import format after checking the target system.",
       "q7": "Does the accounting software need to change?",
@@ -136,8 +139,8 @@
     },
     "row": {
       "eyebrow": "aiNOW document flow",
-      "heading": "See a document become one accounting row.",
-      "subtitle": "The demo shows reading, review, and the final row.",
+      "heading": "See an invoice become one accounting row.",
+      "subtitle": "aiNOW reads the supplier, date, and amounts. The prepared row stays beside the source.",
       "play": "Play",
       "again": "Replay",
       "running": "Reading",
@@ -157,13 +160,22 @@
       "colNet": "Net",
       "colVat": "VAT",
       "colTotal": "Total",
+      "status": "Status",
       "note": "aiNOW keeps the source fields beside the prepared row.",
-      "commodity": "This sample shows the full aiDOCS flow, not only text reading."
+      "commodity": "This sample shows the full aiDOCS flow, not only text reading.",
+      "source": "Supplier invoice",
+      "sourceSupplier": "Supplier",
+      "sourceInvoice": "Invoice number",
+      "sourceDate": "Invoice date",
+      "sourceTotal": "Total due",
+      "details": "Fields found by aiNOW",
+      "businessResult": "aiNOW prepares one reviewed row that can be moved into the agreed accounting format.",
+      "showResult": "Show the result"
     },
     "split": {
       "eyebrow": "Choose the right files with aiNOW",
-      "heading": "Some documents already have structured data.",
-      "subtitle": "Place each sample in the matching group.",
+      "heading": "See which files are ready and which need processing.",
+      "subtitle": "aiNOW separates existing structured data from files that need aiDOCS. The team sees the route for every file.",
       "free": "Use the existing structured source",
       "paid": "Process with aiDOCS",
       "unsorted": "Documents to sort",
@@ -189,12 +201,20 @@
       "e8": "aiNOW checks whether the required contract fields are clear.",
       "score": "Correct choices",
       "of": "of",
-      "outro": "aiNOW helps separate existing structured data from files that need processing."
+      "outro": "aiNOW helps separate existing structured data from files that need processing.",
+      "incoming": "Incoming document queue",
+      "routeNext": "Sort next",
+      "progress": "Files sorted",
+      "allSorted": "All sorted",
+      "allSortedDetail": "Every sample has a clear next step.",
+      "freeHint": "Use data that already exists",
+      "paidHint": "Read and review with aiDOCS",
+      "businessResult": "aiNOW avoids rereading data that is already structured and sends only the right files to aiDOCS."
     },
     "scans": {
       "eyebrow": "Image checks by aiNOW",
-      "heading": "The same receipt can produce different results.",
-      "subtitle": "Choose a sample to see how review changes.",
+      "heading": "A poor photo does not slip into the accounting row.",
+      "subtitle": "aiNOW checks whether a receipt is readable. Difficult images stop with a clear reason for review.",
       "s1": "Clear scan",
       "s2": "Angled phone photo",
       "s3": "Crumpled receipt",
@@ -207,12 +227,18 @@
       "held": "Needs review",
       "fail": "Not read",
       "note": "aiNOW checks difficult samples before setup.",
-      "replay": "Replay"
+      "replay": "Replay",
+      "sampleCount": "Sample {current} of {total}",
+      "okAction": "The visible fields can move to the draft.",
+      "heldAction": "The highlighted value waits for a person.",
+      "failAction": "Nothing is added until a clearer source is supplied.",
+      "next": "Next sample",
+      "businessResult": "aiNOW keeps an uncertain amount or date out of the row until somebody reviews it."
     },
     "accuracy": {
       "eyebrow": "Review settings by aiNOW",
-      "heading": "Uncertain values stay visible.",
-      "subtitle": "Move the line to see which fields need review.",
+      "heading": "The team chooses what must be reviewed.",
+      "subtitle": "A higher line holds more fields for a person. A lower line lets more fields move automatically.",
       "thresholdLabel": "Minimum score for automatic placement",
       "lowEnd": "More automatic fields",
       "highEnd": "More reviewed fields",
@@ -225,7 +251,7 @@
       "claim": "aiNOW shows the effect of the selected line.",
       "honest": "These values belong only to this sample document.",
       "doc": "Receipt sample",
-      "sample": "12 fields",
+      "sample": "5 important fields",
       "theLine": "review line",
       "autoChip": "Automatic",
       "humanChip": "Review",
@@ -245,12 +271,15 @@
       "f12": "Purpose",
       "w11": "The demo date differs from the source date.",
       "w12": "The demo purpose is not present in the source.",
-      "replay": "Replay"
+      "replay": "Replay",
+      "autoReady": "This value can move to the draft.",
+      "reviewReady": "This value waits for a person.",
+      "businessResult": "aiNOW keeps uncertain values visible while the team chooses a safe review line."
     },
     "signoff": {
       "eyebrow": "Sign-off with aiNOW",
-      "heading": "The accountant approves the final row.",
-      "subtitle": "An uncertain date is held, corrected, drafted, and then approved.",
+      "heading": "The accountant checks the final row at a glance.",
+      "subtitle": "aiNOW holds an ambiguous date, prepares the draft, and leaves the final approval to the accountant.",
       "extracted": "Read date",
       "ambiguous": "06/07/26: two possible dates",
       "held": "Held for review",
@@ -260,6 +289,57 @@
       "signed": "Approved by the accountant",
       "orisReady": "Import row ready",
       "outcome": "aiNOW prepares the draft. The accountant gives final approval.",
+      "replay": "Replay",
+      "currentStage": "Approval flow",
+      "businessResult": "aiNOW prepares the draft; the accountant keeps control of the final approval."
+    },
+    "capabilities": {
+      "eyebrow": "Five practical capabilities",
+      "title": "From document to checked accounting data",
+      "intro": "aiDOCS handles routine document work and sends anything uncertain to a person.",
+      "outcomeLabel": "Business result",
+      "items": {
+        "1": {
+          "title": "Document to accounting row",
+          "description": "Reads the date, supplier, VAT, and total from an invoice or receipt.",
+          "result": "The accountant receives a prepared row instead of retyping the page."
+        },
+        "2": {
+          "title": "Automatic document sorting",
+          "description": "Groups invoices, receipts, contracts, and other files by type.",
+          "result": "Each document reaches the right work queue."
+        },
+        "3": {
+          "title": "Scans and photos",
+          "description": "Reads PDFs, scans, and phone photos without guessing unclear handwriting.",
+          "result": "Clear data moves forward and unclear parts are marked for review."
+        },
+        "4": {
+          "title": "Uncertain value control",
+          "description": "Stops a field when the source is unclear or values do not match.",
+          "result": "A doubtful number cannot quietly enter the accounting system."
+        },
+        "5": {
+          "title": "Accountant approval",
+          "description": "Prepares the draft and keeps final approval with the responsible person.",
+          "result": "Routine work is faster while the business keeps control."
+        }
+      }
+    },
+    "heroStory": {
+      "badge": "Illustrative demo",
+      "inputLabel": "Business request",
+      "input": "Process today's supplier invoice.",
+      "bridgeLabel": "iAI understood",
+      "bridge": "It identifies the document and required fields, then sends the task to aiDOCS.",
+      "productLabel": "aiDOCS processes it",
+      "productAction": "It reads the information needed for accounting.",
+      "detailOne": "Date, supplier, VAT, and total extracted",
+      "detailTwo": "Uncertain value clearly marked",
+      "resultLabel": "Ready",
+      "result": "The accounting row is ready for review.",
+      "businessLabel": "What the business gets",
+      "businessValue": "A clear accounting row from one invoice, with final approval kept with the accountant.",
       "replay": "Replay"
     },
     "proof": {
@@ -268,6 +348,8 @@
       "colCounter": "Counterparty",
       "colVat": "VAT",
       "colTotal": "Total",
+      "status": "Status",
+      "posted": "Row ready",
       "note": "The demo ends with one reviewed accounting row.",
       "replay": "Replay"
     }

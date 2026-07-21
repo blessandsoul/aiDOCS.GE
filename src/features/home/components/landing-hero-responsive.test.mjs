@@ -10,53 +10,56 @@ const proofSource = readFileSync(
   new URL('../../showcase/HeroProof.tsx', import.meta.url),
   'utf8',
 );
+const workflowSource = readFileSync(new URL('./HeroWorkflowStory.tsx', import.meta.url), 'utf8');
+const workflowCss = readFileSync(new URL('./hero-workflow-story.css', import.meta.url), 'utf8');
 const magneticSource = readFileSync(
   new URL('../../../components/common/MagneticButton.tsx', import.meta.url),
   'utf8',
 );
 
-test('mobile hero keeps its grid and animated headline inside the padded viewport', () => {
+test('mobile hero keeps the shared static headline and demo inside the padded viewport', () => {
+  assert.match(heroSource, /data-family-shell="true" className="hero-family-shell/);
+  assert.match(heroSource, /className="order-1 min-w-0 text-center/);
+  assert.match(heroSource, /className="relative order-2 min-w-0/);
+  assert.match(heroSource, /className="order-3 min-w-0 text-center/);
+  assert.match(heroSource, /className="hero-static-accent"/);
+  assert.doesNotMatch(heroSource, /setInterval|setTimeout|caretW|availableWidth/);
+  assert.match(heroCss, /\.hero-family-shell\{width:min\(1140px,calc\(100% - 48px\)\)/);
+  assert.match(heroCss, /@media\(max-width:640px\)[^{]*\{[^}]*#hero\{padding-top:96px;/);
+  assert.match(heroCss, /#hero \[data-hero-demo\]\{min-height:440px\}/);
+  assert.match(proofSource, /<HeroWorkflowStory/u);
+  assert.match(proofSource, /mode="orchestrated"/u);
+  assert.match(workflowCss, /\.hero-workflow\s*\{[^}]*min-width:\s*0;[^}]*overflow:\s*hidden;/su);
+  assert.match(workflowCss, /grid-template-columns:\s*38px minmax\(0, 1fr\);/u);
   assert.match(
-    heroSource,
-    /const availableWidth = el\.parentElement\?\.clientWidth \?\? maxW \+ caretW;/,
+    workflowCss,
+    /@media \(max-width: 479px\)[\s\S]*?\.hero-workflow__details\s*\{\s*grid-template-columns:\s*1fr;/u,
   );
-  assert.match(
-    heroSource,
-    /Math\.min\(Math\.ceil\(maxW \+ caretW\), availableWidth\)/,
-  );
-  assert.match(heroSource, /className="w-full min-w-0 max-w-\[1180px\]/);
-  assert.match(heroSource, /className="min-w-0 order-1 text-center/);
-  assert.match(heroSource, /className="relative min-w-0 order-2/);
-  assert.match(
-    heroCss,
-    /@media \(max-width: 640px\) \{\s*\.typewriter \{[^}]*max-width: 100%;[^}]*white-space: normal;/,
-  );
-  assert.match(
-    proofSource,
-    /className="grid grid-cols-1 items-center gap-4 sm:grid-cols-\[86px_minmax\(0,1fr\)\]/,
-  );
-  assert.match(proofSource, /className="relative min-h-\[132px\] min-w-0 w-full"/);
-  assert.match(proofSource, /className="w-full table-fixed border-collapse bg-white text-left"/);
 });
 
 test('hero proof uses the canonical loop and bundled status icon', () => {
-  assert.match(proofSource, /createDocsDemoLoop\(/);
-  assert.match(proofSource, /cycleMs: 6000/);
-  assert.doesNotMatch(proofSource, /createDemoLoop|holdMs/);
-  assert.match(proofSource, /<Ico name="solar:check-circle-bold-duotone"/);
-  assert.doesNotMatch(proofSource, /uppercase|✓|✅|❌|⚠|—|–/u);
+  assert.match(proofSource, /<HeroWorkflowStory/u);
+  assert.match(workflowSource, /import \{ createDemoLoop \} from '\.\/lib\/demo-loop\.mjs';/u);
+  assert.match(workflowSource, /const CYCLE_MS = 6_400;/u);
+  assert.match(workflowSource, /threshold: 0\.35/u);
+  assert.match(workflowSource, /holdMs: 2_000/u);
+  assert.match(workflowSource, /<Ico name="solar:check-circle-bold-duotone"/u);
+  assert.doesNotMatch(`${proofSource}\n${workflowSource}`, /✓|✅|❌|⚠|—|–/u);
   assert.match(heroSource, /<Ico name="solar:arrow-right-bold-duotone"/);
   assert.doesNotMatch(heroSource, /<svg[\s\S]*?<polyline points="12 5 19 12 12 19"/);
 });
 
-test('product copy keeps its authored case in work, faq, and cta', () => {
-  assert.match(heroSource, /import '\.\/landing-product-copy\.css';/);
-  assert.match(productCopyCss, /#work \.uppercase[\s\S]*?#faq \.uppercase[\s\S]*?#cta \.uppercase/);
-  assert.match(productCopyCss, /text-transform: none;/);
+test('product copy uses the shared authored-case typography without a local override', () => {
+  assert.doesNotMatch(heroSource, /landing-product-copy\.css/);
+  assert.match(productCopyCss, /#work \.uppercase[\s\S]*?#faq \.uppercase[\s\S]*?#cta \.uppercase/u);
+  assert.match(productCopyCss, /text-transform: none;/u);
+  assert.match(heroSource, /className="hero-static-accent"/);
+  assert.doesNotMatch(heroSource, /uppercase|text-transform/u);
 });
 
-test('reduced motion keeps server and client markup deterministic', () => {
+test('hero controls keep deterministic markup without cursor-following motion', () => {
   assert.doesNotMatch(proofSource, /initial=\{reduced \? false/);
-  assert.doesNotMatch(magneticSource, /if \(reducedMotion\(\)\) \{\s*return <span/);
-  assert.match(magneticSource, /const handleMove[\s\S]*?if \(reducedMotion\(\)\) return;/);
+  assert.doesNotMatch(workflowSource, /framer-motion|AnimatePresence|layout=/u);
+  assert.match(magneticSource, /return <span className=\{cn\('inline-flex', className\)\}>\{children\}<\/span>;/);
+  assert.doesNotMatch(magneticSource, /handleMove|useMotionValue|onMouseMove/);
 });

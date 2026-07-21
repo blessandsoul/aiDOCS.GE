@@ -65,8 +65,8 @@ export const SITE = {
    */
   seo: {
     disambiguating:
-      "A document-to-ledger service for Georgian accounting firms: bank statement PDFs, foreign supplier invoices, customs paperwork and photographed receipts become a file that imports into ORIS, Balance or 1C. It is not an OCR product for domestic tax invoices, because rs.ge already makes those structured data and selling OCR for them would be selling a solved problem.",
-    serviceType: "Document extraction into a posted ledger row, for Georgian accounting firms",
+      "A document-to-ledger service for Georgian accounting firms: bank statement PDFs, foreign supplier invoices, customs paperwork and photographed receipts become a review-ready file for ORIS, Balance or 1C.",
+    serviceType: "Document extraction into reviewed ledger drafts for Georgian accounting firms",
     audienceName:
       "Georgian accounting firms and outsourced bookkeepers, plus customs brokers and freight forwarders",
     areaServed: "GE",
@@ -93,15 +93,15 @@ export const SITE = {
     boundary:
       "aiDOCS is one productized job: a document becomes a posted ledger row. Automating the rest of the office, the orders and approvals and reports, is aiOFFICE.ge.",
     limits: [
-      "Your domestic tax invoices are already structured data inside rs.ge. Do not pay us for those. The page carries a sorter that tells you which of your documents you should not be buying from us.",
-      "There is no published Georgian-language document-extraction accuracy benchmark from any vendor on earth, so we quote no accuracy figure. We measure it on your documents in a paid pilot, and that measured number is the one we both work from.",
-      "We do not do handwriting.",
-      "We produce a draft entry and your accountant signs it. We say so in the contract and we do not accept tax liability.",
+      "Domestic tax invoices already available as structured data in rs.ge are outside the standard aiDOCS scope.",
+      "aiNOW publishes no general accuracy percentage. aiNOW measures selected sample documents and reports the result for those files.",
+      "aiDOCS does not include handwriting recognition.",
+      "aiDOCS produces a draft entry. The client's accountant reviews and approves it before posting.",
     ],
     commitment:
-      "We measure accuracy on your own documents before you pay anything. First 3 accounting firms get the pilot free and keep their own number.",
+      "aiNOW measures extraction quality on the client's own sample documents and reports which fields still need human review before production use.",
     summary:
-      "aiDOCS turns the documents that rs.ge does not contain into posted ledger rows for Georgian accounting firms: bank statement PDFs from BOG and TBC, foreign supplier invoices on imports, customs paperwork, and photographed fiscal receipts. It is deliberately not an OCR product for domestic tax invoices, because Georgia already made those structured data through mandatory electronic invoicing, and the site says so on its own sales page. It quotes no accuracy percentage, because no vendor anywhere publishes a Georgian benchmark, and offers instead to measure the number on the customer's own documents. Built by the aiNOW agency in Tbilisi.",
+      "aiDOCS extracts selected fields from bank statements, foreign supplier invoices, customs paperwork and photographed receipts for Georgian accounting teams. It prepares a review-ready file for ORIS, Balance or 1C, marks uncertain fields and keeps final posting under the client's accountant.",
   },
 } as const;
 
