@@ -9,7 +9,9 @@
     "fetch-covers:force": "node scripts/fetch-covers.mjs --force",
     "indexnow": "node scripts/indexnow-ping.mjs",
     "test:showcase": "node --test \"src/features/showcase/*.test.mjs\" \"src/features/home/components/*.test.mjs\" \"src/messages/*.test.mjs\"",
+    "prebuild": "npm run blog:quality",
     "build": "next build",
+    "blog:quality": "node scripts/blog-quality-gate.mjs",
     "start": "next start",
     "lint": "eslint"
   },
