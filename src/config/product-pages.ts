@@ -11,6 +11,25 @@ export const PRODUCT_PAGES = {
       { id: 'camera', name: 'Camera', icon: 'solar:camera-bold-duotone', category: 'businessSystems', connection: 'file', status: 'available', dataFlow: 'documents' },
       { id: 'oris', name: 'ORIS', icon: 'solar:calculator-bold-duotone', category: 'businessSystems', connection: 'custom', status: 'customSetup', dataFlow: 'accountingDrafts' },
       { id: 'balance-1c', name: 'Balance / 1C', icon: 'solar:database-bold-duotone', category: 'businessSystems', connection: 'custom', status: 'customSetup', dataFlow: 'accountingDrafts' },
+      {
+        id: 'tiktok-shop-documents',
+        name: 'TikTok Shop documents',
+        icon: 'solar:videocamera-record-bold-duotone',
+        category: 'businessSystems',
+        connection: 'planned',
+        status: 'planned',
+        dataFlow: 'documents',
+        machineDescription:
+          'Importing eligible TikTok Shop order documents for review is on the aiNOW roadmap and is not currently available.',
+        requirements: [
+          'TikTok Shop partner and seller authorization',
+          'Approved scopes',
+          'TikTok Shop availability for the seller market',
+        ],
+        officialSources: [
+          'https://partner.tiktokshop.com/docv2/page/tts-developer-guide',
+        ],
+      },
     ],
   },
   security: { status: 'public' },
