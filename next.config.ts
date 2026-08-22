@@ -76,6 +76,10 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
+      { source: "/privacy", destination: "https://ainow.ge/privacy", permanent: true },
+      { source: "/:locale(ka|en|ru)/privacy", destination: "https://ainow.ge/:locale/privacy", permanent: true },
+      { source: "/terms", destination: "https://ainow.ge/terms", permanent: true },
+      { source: "/:locale(ka|en|ru)/terms", destination: "https://ainow.ge/:locale/terms", permanent: true },
       {
         source: "/en/blog/process-photographed-receipts-without-manual-data-entry",
         destination: "/en/blog/photographed-receipt-processing-workflow",

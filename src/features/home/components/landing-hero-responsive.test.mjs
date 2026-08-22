@@ -19,16 +19,17 @@ const magneticSource = readFileSync(
 
 test('mobile hero keeps the shared rotating headline and demo inside the padded viewport', () => {
   assert.match(heroSource, /data-family-shell="true" className="hero-family-shell/);
-  assert.match(heroSource, /className="order-1 min-w-0 text-center/);
+  assert.match(heroSource, /className="hero-copy-intro order-1 min-w-0 text-center/);
   assert.match(heroSource, /className="relative order-2 min-w-0/);
-  assert.match(heroSource, /className="order-3 min-w-0 text-center/);
+  assert.match(heroSource, /className="hero-copy-detail order-3 min-w-0 text-center/);
   assert.match(heroSource, /className="typewriter"/);
   assert.match(heroSource, /data-demo-state="idle"/);
   assert.match(heroSource, /IntersectionObserver/);
   assert.doesNotMatch(heroSource, /setInterval|caretW|availableWidth/);
   assert.match(heroCss, /\.hero-family-shell\{width:min\(1140px,calc\(100% - 48px\)\)/);
   assert.match(heroCss, /@media\(max-width:640px\)[^{]*\{[^}]*#hero\{padding-top:96px;/);
-  assert.match(heroCss, /#hero \[data-hero-demo\]\{min-height:440px\}/);
+  assert.match(heroCss, /#hero \[data-hero-demo\]\{min-height:520px\}/);
+  assert.match(heroCss, /@media\(max-width:640px\)[^{]*\{[\s\S]*?#hero \[data-hero-demo\]\{min-height:330px\}/);
   assert.match(proofSource, /<HeroWorkflowStory/u);
   assert.match(proofSource, /mode="orchestrated"/u);
   assert.match(workflowCss, /\.hero-workflow\s*\{[^}]*min-width:\s*0;[^}]*overflow:\s*hidden;/su);
