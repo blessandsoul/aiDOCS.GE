@@ -63,12 +63,12 @@
   },
   "product": {
     "seo": {
-      "title": "aiDOCS: turn business documents into usable data with aiNOW",
-      "description": "aiNOW sets up aiDOCS for selected documents. It reads fields, marks uncertain values, and prepares rows for review."
+      "title": "aiDOCS: document processing automation for business",
+      "description": "aiDOCS automates selected business documents, reads fields, marks uncertain values, and prepares structured rows for review."
     },
     "hero": {
       "owner": "Your",
-      "role": "document manager",
+      "role": "document automation manager",
       "lead": "automatically turns a file into",
       "taglinePrefix": "aiNOW",
       "taglineWorks": "prepares the row",
@@ -78,7 +78,7 @@
       "ctaCall": "Contact aiNOW",
       "commitment": "aiNOW tests the flow on sample documents and shows the result before setup.",
       "audience": "For accounting teams",
-      "sub": "Receipts, statements, supplier invoices, and other selected files move into one clear review flow.",
+      "sub": "Document processing automation moves receipts, statements, supplier invoices, and other selected files into one clear review flow.",
       "signedBy": "aiNOW checks the process, configures the fields, and supports the setup."
     },
     "work": {
