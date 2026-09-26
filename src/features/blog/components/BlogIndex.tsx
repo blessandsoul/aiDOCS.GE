@@ -1,6 +1,7 @@
 import { Ico } from '@/components/common/Ico';
 import { SITE } from '@/config/site';
 import NextLink from 'next/link';
+import Image from 'next/image';
 import { localePath } from '@/i18n/seo-locales';
 
 import { getBlogCopy } from '../lib/copy';
@@ -51,6 +52,9 @@ export function BlogIndex({ posts, locale, contentLocale = locale }: { posts: Bl
           <div className="blog-card-grid">
             {posts.map((post) => (
               <NextLink key={post.slug} href={localePath(post.locale, `/blog/${post.slug}`)} className="blog-card">
+                <div className="blog-card-cover" aria-hidden="true">
+                  <Image src={post.coverImage} alt="" fill sizes="(max-width: 768px) 100vw, (max-width: 1100px) 50vw, 33vw" />
+                </div>
                 <div className="blog-card-topline">
                   <span className="blog-card-cluster">{post.cluster}</span>
                   <Ico name="solar:arrow-right-up-bold-duotone" aria-hidden="true" />

@@ -10,6 +10,10 @@
     "privacy": "Privacy",
     "terms": "Terms"
   },
+  "blog": {
+    "seoTitle": "aiDOCS blog",
+    "seoDescription": "Practical document processing guides for accounting teams."
+  },
   "pricing": {
     "seoTitle": "{product} pricing and project scope",
     "seoDescription": "See how {product} is scoped, what is included, what changes the estimate, and when payment starts.",

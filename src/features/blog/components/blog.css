@@ -101,6 +101,17 @@
   transition: transform 180ms cubic-bezier(.23, 1, .32, 1), border-color 180ms ease, box-shadow 180ms ease;
 }
 
+.blog-card-cover {
+  position: relative;
+  height: 158px;
+  overflow: hidden;
+  margin: -8px -8px 18px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--brand) 10%, #fff);
+}
+
+.blog-card-cover img { object-fit: cover; }
+
 .blog-card:hover {
   transform: translateY(-3px);
   border-color: color-mix(in srgb, var(--brand) 45%, #d0d5dd);
@@ -262,6 +273,8 @@
     radial-gradient(circle at 15% 20%, color-mix(in srgb, var(--brand) 34%, transparent), transparent 42%),
     linear-gradient(135deg, #fff 0%, color-mix(in srgb, var(--brand) 9%, #fff) 100%);
 }
+
+.article-cover-image { object-fit: cover; }
 
 .article-cover-grid {
   position: absolute;

@@ -1,5 +1,5 @@
 import { Ico } from '@/components/common/Ico';
-import { SITE } from '@/config/site';
+import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 
 import { extractHeadings } from '../lib/blog';
@@ -48,13 +48,14 @@ export function BlogArticle({
       </header>
 
       <div className="article-cover" data-family-shell="true" aria-hidden="true">
-        <div className="article-cover-grid" />
-        <div className="wordmark-3d article-cover-mark">
-          <span className="wm-prefix">{SITE.wordmark.prefix}</span>
-          <span className="wm-mark">{SITE.wordmark.mark}</span>
-          <span className="wm-accent" />
-        </div>
-        <Ico name="solar:document-text-bold-duotone" />
+        <Image
+          src={post.coverImage}
+          alt=""
+          fill
+          sizes="(max-width: 768px) 100vw, 1200px"
+          className="article-cover-image"
+          priority
+        />
       </div>
 
       <div className="article-layout" data-family-shell="true">
