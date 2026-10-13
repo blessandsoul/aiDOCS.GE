@@ -1,0 +1,52 @@
+.aidocs-product {
+  --aidocs-indigo: #5b5bf7;
+  --aidocs-violet: #8b7cff;
+  --aidocs-lavender: #e1deff;
+}
+
+.aidocs-product .text-blue-600,
+.aidocs-product .text-blue-700,
+.aidocs-product .text-indigo-600,
+.aidocs-product .text-purple-600,
+.aidocs-product .text-pink-600,
+.aidocs-product .text-cyan-600,
+.aidocs-product .text-emerald-600,
+.aidocs-product .text-orange-600,
+.aidocs-product .text-rose-600 { color: var(--aidocs-indigo) !important; }
+
+.aidocs-product [class~="dark:text-blue-400"],
+.aidocs-product [class~="dark:text-blue-300"],
+.aidocs-product [class~="dark:text-indigo-400"],
+.aidocs-product [class~="dark:text-purple-400"],
+.aidocs-product [class~="dark:text-pink-400"],
+.aidocs-product [class~="dark:text-cyan-400"],
+.aidocs-product [class~="dark:text-emerald-400"],
+.aidocs-product [class~="dark:text-orange-400"],
+.aidocs-product [class~="dark:text-rose-400"] { color: var(--aidocs-violet) !important; }
+
+.aidocs-product .bg-blue-600,
+.aidocs-product .bg-indigo-600,
+.aidocs-product .bg-purple-600,
+.aidocs-product .bg-pink-600,
+.aidocs-product .bg-cyan-600,
+.aidocs-product .bg-emerald-600,
+.aidocs-product .bg-orange-500,
+.aidocs-product .bg-rose-500 { background-color: var(--aidocs-indigo) !important; }
+
+.aidocs-product .border-blue-500,
+.aidocs-product .border-indigo-500,
+.aidocs-product .border-purple-500,
+.aidocs-product .border-pink-500,
+.aidocs-product .border-cyan-500,
+.aidocs-product .border-emerald-500,
+.aidocs-product .border-orange-500,
+.aidocs-product .border-rose-500 { border-color: color-mix(in srgb, var(--aidocs-violet) 55%, transparent) !important; }
+
+.aidocs-product .ainow-model-stage__status,
+.aidocs-product .ainow-divider-hairline,
+.aidocs-product .ainow-btn-primary { background-color: var(--aidocs-indigo); }
+
+.aidocs-product .ainow-blueprint-bg::before,
+.aidocs-product .ainow-blueprint-bg::after { border-color: color-mix(in srgb, var(--aidocs-lavender) 42%, transparent); }
+
+.aidocs-product .ainow-btn-primary:hover { background-color: var(--aidocs-violet); }

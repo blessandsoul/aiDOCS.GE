@@ -1,88 +1,54 @@
-import { SITE } from '@/config/site';
-import { PUBLIC_ROUTES } from '@/features/product-pages/routes';
-import {
-  MACHINE_FAQ,
-  MACHINE_PUBLIC_PAGES,
-  MACHINE_REVIEWED_ON,
-  PRODUCT_MACHINE_INTEGRATIONS,
-  PRODUCT_BRAND,
-  machineTextResponse,
-} from '@/features/product-pages/machine';
+import { AIDOCS_BASE_URL, AIDOCS_FAQS, AIDOCS_PUBLIC_FACTS } from "@/lib/aidocs-public-facts";
 
-export const dynamic = 'force-static';
-
-export function GET() {
-  const lines: string[] = [
-    `# ${PRODUCT_BRAND}, full product reference`,
-    '',
-    `Last reviewed: ${MACHINE_REVIEWED_ON}`,
-    `Canonical website: ${SITE.baseUrl}`,
-    '',
-    '## Definition',
-    '',
-    SITE.seo.summary,
-    '',
-    '## Intended customer',
-    '',
-    SITE.seo.audienceName,
-    '',
-    `## What ${PRODUCT_BRAND} does`,
-    '',
-    ...SITE.seo.features.map((feature) => `- ${feature}`),
-    '',
-    '## Integrations and availability',
-    '',
-    ...PRODUCT_MACHINE_INTEGRATIONS.flatMap((integration) => [
-      `### ${integration.platform}`,
-      '',
-      `Status: ${integration.status}.`,
-      `Available now: ${integration.availableNow ? 'yes' : 'no'}.`,
-      ...(integration.description ? [integration.description] : []),
-      ...(integration.requirements.length > 0
-        ? [
-            'Requirements:',
-            ...integration.requirements.map((requirement) => `- ${requirement}`),
-          ]
-        : []),
-      '',
-    ]),
-    '## Product boundary',
-    '',
-    SITE.seo.boundary,
-    '',
-    '## Known limits',
-    '',
-    ...SITE.seo.limits.map((limit) => `- ${limit}`),
-    '',
-    '## Commitment',
-    '',
-    SITE.seo.commitment,
-    '',
-    '## Public pages',
-    '',
-    ...PUBLIC_ROUTES.map((route, index) => {
-      const page = MACHINE_PUBLIC_PAGES[index];
-      return `- ${route.key}: ${page.url}`;
-    }),
-    '',
-    '## Frequently asked questions',
-    '',
-    ...MACHINE_FAQ.flatMap(({ question, answer }) => [
-      `### ${question}`,
-      '',
-      answer,
-      '',
-    ]),
-    '## Verification',
-    '',
-    `- Provider: aiNOW, https://ainow.ge`,
-    `- Structured summary: ${SITE.baseUrl}/ai/summary.json`,
-    `- Structured service facts: ${SITE.baseUrl}/ai/service.json`,
-    `- Structured integration status: ${SITE.baseUrl}/ai/integrations.json`,
-    `- Structured FAQ: ${SITE.baseUrl}/ai/faq.json`,
-    `- Concise index: ${SITE.baseUrl}/llms.txt`,
-    '',
+export function GET(): Response {
+  const lines = [
+    "# aiDOCS — full machine-readable scope",
+    "",
+    `Provider: ${AIDOCS_PUBLIC_FACTS.brand.provider}`,
+    `Product: ${AIDOCS_PUBLIC_FACTS.brand.name}`,
+    `URL: ${AIDOCS_BASE_URL}`,
+    `Purpose: ${AIDOCS_PUBLIC_FACTS.purpose}`,
+    `Audience: ${AIDOCS_PUBLIC_FACTS.audience}`,
+    `Last updated: ${AIDOCS_PUBLIC_FACTS.lastUpdated}`,
+    `Pricing status: ${AIDOCS_PUBLIC_FACTS.pricing.status}`,
+    `Pricing note: ${AIDOCS_PUBLIC_FACTS.pricing.note}`,
+    "",
+    "## Workflow",
+    "",
+    "1. Review a representative document sample.",
+    "2. Agree the fields, review owner and output columns.",
+    "3. Extract selected values from the agreed sources.",
+    "4. Keep uncertain values visible for human review.",
+    "5. Prepare the reviewed file for the agreed accounting destination.",
+    "",
+    "## Inputs",
+    "",
+    ...AIDOCS_PUBLIC_FACTS.inputs.map((item) => `- ${item}`),
+    "",
+    "## Outputs",
+    "",
+    ...AIDOCS_PUBLIC_FACTS.outputs.map((item) => `- ${item}`),
+    "",
+    "## Boundaries",
+    "",
+    ...AIDOCS_PUBLIC_FACTS.boundaries.map((item) => `- ${item}`),
+    "",
+    "## FAQ",
+    "",
+    ...AIDOCS_FAQS.flatMap((item) => [`### ${item.question}`, item.answer, ""]),
+    "## Links",
+    "",
+    `- Summary: ${AIDOCS_BASE_URL}/ai/summary.json`,
+    `- FAQ JSON: ${AIDOCS_BASE_URL}/ai/faq.json`,
+    `- Service JSON: ${AIDOCS_BASE_URL}/ai/service.json`,
+    `- Catalog JSON: ${AIDOCS_BASE_URL}/ai/catalog.json`,
+    `- Integrations JSON: ${AIDOCS_BASE_URL}/ai/integrations.json`,
+    `- LLM index: ${AIDOCS_BASE_URL}/llms.txt`,
+    "",
+    "No aiDOCS-authored articles are currently published; no aiNOW article corpus is reproduced here.",
   ];
 
-  return machineTextResponse(lines.join('\n'));
+  return new Response(`${lines.join("\n")}\n`, {
+    headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=86400, stale-while-revalidate=3600" },
+  });
 }
